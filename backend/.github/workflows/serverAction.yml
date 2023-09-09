@@ -39,7 +39,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: npm ci
       - run: npm run build --if-present
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
