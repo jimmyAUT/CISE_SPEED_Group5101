@@ -7,8 +7,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
   push:
-    branches:
-      - jimmy
+    paths:
+      - 'backend/**'
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
