@@ -24,7 +24,6 @@ on:
     paths:
       - 'backend/**'
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,8 +39,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
-
       - run: npm run build --if-present
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
