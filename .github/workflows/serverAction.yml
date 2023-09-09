@@ -1,4 +1,3 @@
-name: deploy SPEED server
 on:
   push:
     paths:
