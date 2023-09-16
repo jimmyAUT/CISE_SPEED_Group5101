@@ -9,7 +9,7 @@ export class SearchService {
   constructor(
     @InjectModel('Article') private readonly articleModel: Model<Article>,
   ) {}
-  async search() {
+  async searchAll() {
     try {
       const article = await this.articleModel.find().exec();
       return article;
@@ -22,7 +22,7 @@ export class SearchService {
     let query: any = { title: { $regex: keyword, $options: 'i' } };
 
     if (year) {
-      query = { ...query, pubyear: year };
+      query = { ...query, pubyear: { $regex: year } };
     }
     try {
       const articles = await this.articleModel.find(query).exec();

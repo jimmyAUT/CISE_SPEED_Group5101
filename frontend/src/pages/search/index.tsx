@@ -1,7 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import { searchArticles } from "@/api/search";
 import formStyles from "../../../styles/Form.module.scss";
-import { GetStaticProps, NextPage } from "next";
 import SortableTable from "@/components/table/SortableTable";
 
 interface ArticlesInterface {

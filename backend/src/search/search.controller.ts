@@ -10,6 +10,6 @@ export class SearchController {
   }
   @Get('all')
   async searchAll() {
-    return this.searchService.search();
+    return this.searchService.searchAll();
   }
 }

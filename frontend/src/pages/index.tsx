@@ -1,78 +1,79 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { FormEvent, useState } from "react";
+import { login } from "@/api/register";
+import { useRouter } from "next/router";
+import formStyles from "../../styles/Form.module.scss";
 
-export default function Home() {
+const Home = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("submitter"); // 默认角色是submitter
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
 
-  //register 邏輯
-  const handleRegister = async () => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const account = JSON.stringify({
+      email,
+      password,
+      role,
+    });
+    console.log(account);
     try {
-      const response = await axios.post("/auth/register", {
-        email,
-        password,
-        role,
-      });
-      console.log(response.data);
-      setUser(response.data);
+      const response = await login(account);
+      console.log(response);
+      setUser(response);
     } catch (error) {
-      console.error(error);
+      console.error("Login Error:", error);
     }
-  };
-
-  // login 邏輯
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post("/auth/login", { email, password });
-      console.log(response.data);
-      setUser(response.data.user);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Log out 邏輯
-  const handleLogout = () => {
-    // 清除Cookie或LocalStorage并重置用户状态
-    // ...
-
-    setUser(null);
   };
 
   return (
     <div className="container">
       <h1>Software Practice Empirical Evidence Database (SPEED)</h1>
-      {user ? (
+      {Object.keys(user).length !== 0 ? (
         <div>
-          {/* <p>Welcome, {user.email}!</p> */}
-          <button onClick={handleLogout}>Logout</button>
+          <button className={formStyles.formItem}>Logout</button>
         </div>
       ) : (
         <div>
-          <input
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <select onChange={(e) => setRole(e.target.value)}>
-            <option value="submitter">Submitter</option>
-            <option value="moderator">Moderator</option>
-            <option value="analyst">Analyst</option>
-            <option value="administrator">Administrator</option>
-          </select>
-          <button onClick={handleRegister}>Register</button>
-          <button onClick={handleLogin}>Login</button>
+          <button
+            className={formStyles.formItem}
+            onClick={() => router.push("/register")}
+          >
+            Register
+          </button>
+          <form className={formStyles.form} onSubmit={submit}>
+            <input
+              className={formStyles.formItem}
+              type="text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              className={formStyles.formItem}
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <select
+              className={formStyles.formItem}
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option value="submitter">Submitter</option>
+              <option value="moderator">Moderator</option>
+              <option value="analyst">Analyst</option>
+              <option value="administrator">Administrator</option>
+            </select>
+            <button className={formStyles.formItem} type="submit">
+              Sign In
+            </button>
+          </form>
         </div>
       )}
     </div>
   );
-}
+};
+
+export default Home;

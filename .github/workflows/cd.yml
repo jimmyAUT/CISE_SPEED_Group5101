@@ -1,12 +1,15 @@
 name: deploy SPEED server
 on:
   push:
-    paths:
-      - "backend/**"
+    branches:
+      - jimmy
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
       - uses: actions/checkout@v2
       - name: Install Vercel CLI
         run: npm install --global vercel@latest

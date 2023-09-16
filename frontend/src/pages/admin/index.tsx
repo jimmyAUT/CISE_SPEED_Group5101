@@ -1,7 +1,5 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-// import Users from "./users"; // 导入 Users 组件
-// import Users from "./users";
 
 const Admin: NextPage = () => {
   const router = useRouter(); // 使用 useRouter 钩子来执行导航
