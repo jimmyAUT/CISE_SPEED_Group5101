@@ -23,6 +23,19 @@ jobs:
         run: |
           cd backend 
           npx vercel --token ${VERCEL_TOKEN} --prod
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+      - name: Install frontend Vercel CLI
+        run: |
+          cd frontend 
+          npm install --global vercel@latest
+      - name: Deploy frontend to Vercel
+        run: |
+          cd frontend 
+          npx vercel --token ${VERCEL_TOKEN}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
