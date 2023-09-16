@@ -1,0 +1,22 @@
+name: deploy SPEED server
+on:
+  push:
+    branches:
+      - jimmy
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm install
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - run: npm run build --if-present
+      - name: Deploy to Vercel
+        run: npx vercel --token ${VERCEL_TOKEN} --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
