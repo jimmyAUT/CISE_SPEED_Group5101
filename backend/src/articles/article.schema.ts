@@ -7,8 +7,9 @@ export const ArticleSchema = new mongoose.Schema({
   source: String,
   pubyear: String,
   doi: String,
-  claim: String,
-  evidence: String,
+  abstract: String,
+  comment: String,
+  score: String,
 });
 
 export interface Article extends mongoose.Document {
@@ -17,6 +18,7 @@ export interface Article extends mongoose.Document {
   source: string;
   pubyear: string;
   doi: string;
-  claim: string;
-  evidence: string;
+  abstract: string;
+  comment: string;
+  score: string;
 }
