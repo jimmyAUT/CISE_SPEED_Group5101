@@ -6,9 +6,9 @@ import { createArticle } from "@/api/articles";
 interface ArticleInterface {
   id: string;
   title: string;
-  authors: string;
+  authors: string[];
   source: string;
-  pubyear: string;
+  pubyear: number;
   doi: string;
   comment?: string;
   abstract?: string;  
@@ -31,15 +31,27 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
 
   const handleAddArticle = async (article: ArticleInterface) => {
     console.log("Adding article to DB:", article);
-
+  
+    const dataToSend = {
+      title: article.title,
+      authors: article.authors.join(", "), // Convert array to string
+      source: article.source,
+      publication_year: article.pubyear,  // renamed to match backend
+      doi: article.doi,
+      claim: article.comment,
+      evidence: article.abstract,
+      score: article.score,
+      // add any other fields if necessary
+    };
+  
     try {
-      const response = await createArticle(article); 
+      const response = await createArticle(JSON.stringify(dataToSend)); 
       console.log("Article added:", response);
       setLocalArticles(prevArticles => prevArticles.filter(a => a.id !== article.id));
     } catch (error) {
       console.error("Error adding article:", error);
     }
-  };
+  };  
 
   const headers = [
     "Title", "Authors", "Source", "Publication Year", "DOI", "Comment", "Abstract", "Score", "Action"
@@ -60,7 +72,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
           {localArticles.map((article) => (
             <tr key={article.id}>
               <td>{article.title}</td>
-              <td>{article.authors}</td>
+              <td>{article.authors.join(", ")}</td>  {/* Display authors as a comma-separated string */}
               <td>{article.source}</td>
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
@@ -104,26 +116,29 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
 };
 
 export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
-  try {
-    const articles = reviewedArticles.map((article, index) => {
+    try {
+      const articles = reviewedArticles.map((article, index) => {
+        return {
+          ...article,
+          id: `dummy-${index}`, // add a dummy id for now
+          authors: article.authors.split(", ").map(author => author.trim()), // Convert authors string to array
+          pubyear: parseInt(article.pubyear, 10), // Convert pubyear string to number
+        };
+      });
       return {
-        ...article,
-        id: `dummy-${index}`, // add a dummy id for now
+        props: {
+          articles
+        }
       };
-    });
-    return {
-      props: {
-        articles
-      }
-    };
-  } catch (error) {
-    console.error("Error fetching articles:", error);
-    return {
-      props: {
-        articles: []
-      }
-    };
-  }
-};
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+      return {
+        props: {
+          articles: []
+        }
+      };
+    }
+  };
+  
 
 export default Analyst;
