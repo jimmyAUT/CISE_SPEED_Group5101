@@ -31,22 +31,25 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
 
   const handleAddArticle = async (article: ArticleInterface) => {
     console.log("Adding article to DB:", article);
-  
+    
     const dataToSend = {
       title: article.title,
-      authors: article.authors.join(", "), // Convert array to string
+      authors: article.authors.join(", "), 
       source: article.source,
-      publication_year: article.pubyear,  // renamed to match backend
+      publication_year: article.pubyear,  
       doi: article.doi,
       comment: article.comment,
       abstract: article.abstract,
       score: article.score,
-      // add any other fields if necessary
     };
-  
+    
     try {
       const response = await createArticle(JSON.stringify(dataToSend)); 
       console.log("Article added:", response);
+      
+      // Display an alert after successful addition
+      alert("This article has successfully been added to the database!");
+      
       setLocalArticles(prevArticles => prevArticles.filter(a => a.id !== article.id));
     } catch (error) {
       console.error("Error adding article:", error);
