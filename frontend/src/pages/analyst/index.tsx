@@ -1,6 +1,7 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState } from "react";
 import reviewedArticles from "../../utils/dummydata";
+import axios from 'axios';
 
 interface ArticleInterface {
   id: string;
@@ -28,8 +29,21 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
     setLocalArticles(updatedArticles);
   };
 
-  const handleAddArticle = (article: ArticleInterface) => {
+  const addReviewedArticle = async (articleData: ArticleInterface) => {
+    const response = await axios.post('/api/reviewed-articles', articleData);
+    return response.data;
+  };
+
+  const handleAddArticle = async (article: ArticleInterface) => {
     console.log("Adding article to DB:", article);
+  
+    try {
+      const response = await addReviewedArticle(article);  // Use the article directly without processing authors
+      console.log("Article added:", response);
+      setLocalArticles(prevArticles => prevArticles.filter(a => a.id !== article.id));
+    } catch (error) {
+      console.error("Error adding article:", error);
+    }
   };
 
   const headers = [
@@ -78,7 +92,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
               </td>
               <td>
                 <button
-                  disabled={!article.comment || !article.score}
+                  disabled={!article.abstract || article.score === undefined}
                   onClick={() => handleAddArticle(article)}
                 >
                   Add
@@ -94,7 +108,6 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
     try {
-      // Directly use the reviewedArticles from dummydata
       const articles = reviewedArticles.map((article, index) => {
         return {
           ...article,
@@ -114,6 +127,6 @@ export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
         }
       };
     }
-  };
-  
+};
+
 export default Analyst;
