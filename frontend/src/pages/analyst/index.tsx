@@ -9,9 +9,8 @@ interface ArticleInterface {
   source: string;
   pubyear: string;
   doi: string;
-  claim?: string;
-  evidence?: string;
   comment?: string;
+  abstract?: string;  
   score?: number;
 }
 
@@ -30,14 +29,11 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
   };
 
   const handleAddArticle = (article: ArticleInterface) => {
-    // TODO: Add article to DB using API call
-
-    // For now, let's just console log
     console.log("Adding article to DB:", article);
   };
 
   const headers = [
-    "Title", "Authors", "Source", "Publication Year", "DOI", "Comment", "Score", "Action"
+    "Title", "Authors", "Source", "Publication Year", "DOI", "Comment", "Abstract", "Score", "Action"
   ];
 
   return (
@@ -68,6 +64,13 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
               </td>
               <td>
                 <input 
+                  type="text"
+                  value={article.abstract || ''}
+                  onChange={(e) => handleInputChange(article.id, 'abstract', e.target.value)}
+                />
+              </td>
+              <td>
+                <input 
                   type="number"
                   value={article.score || ''}
                   onChange={(e) => handleInputChange(article.id, 'score', Number(e.target.value))}
@@ -89,30 +92,28 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
   );
 };
 
-// ... other imports ...
-
 export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
-  try {
-    // Directly use the reviewedArticles from dummydata
-    const articles = reviewedArticles.map((article, index) => ({
-      ...article,
-      id: `dummy-${index}`, // add a dummy id for now
-      score: null, // Set this to null or provide a default value if necessary
-    }));
-    return {
-      props: {
-        articles
-      }
-    };
-  } catch (error) {
-    console.error("Error fetching articles:", error);
-    return {
-      props: {
-        articles: []
-      }
-    };
-  }
-};
-
+    try {
+      // Directly use the reviewedArticles from dummydata
+      const articles = reviewedArticles.map((article, index) => {
+        return {
+          ...article,
+          id: `dummy-${index}`, // add a dummy id for now
+        };
+      });
+      return {
+        props: {
+          articles
+        }
+      };
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+      return {
+        props: {
+          articles: []
+        }
+      };
+    }
+  };
+  
 export default Analyst;
-
