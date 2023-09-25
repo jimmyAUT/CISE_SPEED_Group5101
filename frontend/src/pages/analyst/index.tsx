@@ -1,7 +1,7 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState } from "react";
 import reviewedArticles from "../../utils/dummydata";
-import axios from 'axios';
+import { createArticle } from "@/api/articles";
 
 interface ArticleInterface {
   id: string;
@@ -29,16 +29,11 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
     setLocalArticles(updatedArticles);
   };
 
-  const addReviewedArticle = async (articleData: ArticleInterface) => {
-    const response = await axios.post('/api/reviewed-articles', articleData);
-    return response.data;
-  };
-
   const handleAddArticle = async (article: ArticleInterface) => {
     console.log("Adding article to DB:", article);
-  
+
     try {
-      const response = await addReviewedArticle(article);  // Use the article directly without processing authors
+      const response = await createArticle(article); 
       console.log("Article added:", response);
       setLocalArticles(prevArticles => prevArticles.filter(a => a.id !== article.id));
     } catch (error) {
@@ -86,13 +81,15 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
               <td>
                 <input 
                   type="number"
+                  min="1"
+                  max="10"
                   value={article.score || ''}
                   onChange={(e) => handleInputChange(article.id, 'score', Number(e.target.value))}
                 />
               </td>
               <td>
                 <button
-                  disabled={!article.abstract || article.score === undefined}
+                  disabled={!article.comment || !article.score || article.score < 1 || article.score > 10}
                   onClick={() => handleAddArticle(article)}
                 >
                   Add
@@ -107,26 +104,26 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
 };
 
 export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
-    try {
-      const articles = reviewedArticles.map((article, index) => {
-        return {
-          ...article,
-          id: `dummy-${index}`, // add a dummy id for now
-        };
-      });
+  try {
+    const articles = reviewedArticles.map((article, index) => {
       return {
-        props: {
-          articles
-        }
+        ...article,
+        id: `dummy-${index}`, // add a dummy id for now
       };
-    } catch (error) {
-      console.error("Error fetching articles:", error);
-      return {
-        props: {
-          articles: []
-        }
-      };
-    }
+    });
+    return {
+      props: {
+        articles
+      }
+    };
+  } catch (error) {
+    console.error("Error fetching articles:", error);
+    return {
+      props: {
+        articles: []
+      }
+    };
+  }
 };
 
 export default Analyst;
