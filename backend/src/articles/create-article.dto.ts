@@ -9,6 +9,6 @@ export class CreateArticleDto {
   source: string;
   pubyear: string;
   doi: string;
-  claim: string;
-  evidence: string;
+  abstract: string;
+  comment: string;
 }
