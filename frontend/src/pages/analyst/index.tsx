@@ -38,8 +38,8 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,  // renamed to match backend
       doi: article.doi,
-      claim: article.comment,
-      evidence: article.abstract,
+      comment: article.comment,
+      abstract: article.abstract,
       score: article.score,
       // add any other fields if necessary
     };
