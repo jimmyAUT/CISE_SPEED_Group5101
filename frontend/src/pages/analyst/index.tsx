@@ -1,69 +1,85 @@
-import { GetServerSideProps, NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import { useState } from "react";
-import { getArticles, createArticle } from "@/api/articles";
+import reviewedArticles from "../../utils/dummydata";
 
-interface ArticlesInterface {
-  _id: string;
+interface ArticleInterface {
+  id: string;
   title: string;
   authors: string;
   source: string;
   pubyear: string;
   doi: string;
-  abstract: string;
-  comment: string;
-  score: string;
+  claim?: string;
+  evidence?: string;
+  comment?: string;
+  score?: number;
 }
 
 type AnalystProps = {
-  articles: ArticlesInterface[];
+  articles: ArticleInterface[];
 };
 
 const Analyst: NextPage<AnalystProps> = ({ articles }) => {
-  const [articlesData, setArticlesData] = useState(articles);
+  const [localArticles, setLocalArticles] = useState(articles);
 
-  const handleAddToSPEEDDB = async (article: ArticlesInterface) => {
-    try {
-      const response = await createArticle(article);
-      if (response && response._id) {
-        console.log(`Article with id ${response._id} added to SPEED DB`);
-      } else {
-        console.error("Failed to add the article to SPEED DB.");
-      }
-    } catch (error) {
-      console.error("Error adding article to SPEED DB:", error);
-    }
+  const handleInputChange = (id: string, field: keyof ArticleInterface, value: any) => {
+    const updatedArticles = localArticles.map(article => 
+      article.id === id ? { ...article, [field]: value } : article
+    );
+    setLocalArticles(updatedArticles);
   };
+
+  const handleAddArticle = (article: ArticleInterface) => {
+    // TODO: Add article to DB using API call
+
+    // For now, let's just console log
+    console.log("Adding article to DB:", article);
+  };
+
+  const headers = [
+    "Title", "Authors", "Source", "Publication Year", "DOI", "Comment", "Score", "Action"
+  ];
 
   return (
     <div className="container">
-      <h1>Analyst:</h1>
+      <h1>Analyst Review Page</h1>
       <table>
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Authors</th>
-            <th>Source</th>
-            <th>Publication Year</th>
-            <th>DOI</th>
-            <th>Abstract</th>
-            <th>Comment</th>
-            <th>Score</th>
-            <th>Action</th>
+            {headers.map(header => (
+              <th key={header}>{header}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {articlesData.map((article) => (
-            <tr key={article._id}>
+          {localArticles.map((article) => (
+            <tr key={article.id}>
               <td>{article.title}</td>
               <td>{article.authors}</td>
               <td>{article.source}</td>
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
-              <td>{article.abstract}</td>
-              <td>{article.comment}</td>
-              <td>{article.score}</td>
               <td>
-                <button onClick={() => handleAddToSPEEDDB(article)}>Add</button>
+                <input 
+                  type="text"
+                  value={article.comment || ''}
+                  onChange={(e) => handleInputChange(article.id, 'comment', e.target.value)}
+                />
+              </td>
+              <td>
+                <input 
+                  type="number"
+                  value={article.score || ''}
+                  onChange={(e) => handleInputChange(article.id, 'score', Number(e.target.value))}
+                />
+              </td>
+              <td>
+                <button
+                  disabled={!article.comment || !article.score}
+                  onClick={() => handleAddArticle(article)}
+                >
+                  Add
+                </button>
               </td>
             </tr>
           ))}
@@ -73,22 +89,30 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps<AnalystProps> = async (_) => {
+// ... other imports ...
+
+export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
   try {
-    const articles = await getArticles();
+    // Directly use the reviewedArticles from dummydata
+    const articles = reviewedArticles.map((article, index) => ({
+      ...article,
+      id: `dummy-${index}`, // add a dummy id for now
+      score: null, // Set this to null or provide a default value if necessary
+    }));
     return {
       props: {
-        articles,
-      },
+        articles
+      }
     };
   } catch (error) {
     console.error("Error fetching articles:", error);
     return {
       props: {
-        articles: [],
-      },
+        articles: []
+      }
     };
   }
 };
 
 export default Analyst;
+
