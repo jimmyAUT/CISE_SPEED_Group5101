@@ -27,7 +27,7 @@ export default function SubmissionForm() {
         <option value="TDD">TDD</option>
         <option value="Mob Programming">Mob Programmin</option>
       </select>
-      <input type="submit" />
+      <input type="submit." />
     </form>
   );
 }
