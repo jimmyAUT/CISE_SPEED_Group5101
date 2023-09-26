@@ -22,6 +22,15 @@ const Home = () => {
       const response = await login(account);
       console.log(response);
       setUser(response);
+      if (response === "moderator") {
+        router.push("/review");
+      } else if (response === "administrator") {
+        router.push("/admin");
+      } else if (response === "submitter") {
+        router.push("/articles/new");
+      } else if (response === "analyst") {
+        router.push("/analyst");
+      }
     } catch (error) {
       console.error("Login Error:", error);
     }
@@ -57,7 +66,7 @@ const Home = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <select
+            {/* <select
               className={formStyles.formItem}
               onChange={(e) => setRole(e.target.value)}
             >
@@ -65,7 +74,7 @@ const Home = () => {
               <option value="moderator">Moderator</option>
               <option value="analyst">Analyst</option>
               <option value="administrator">Administrator</option>
-            </select>
+            </select> */}
             <button className={formStyles.formItem} type="submit">
               Sign In
             </button>
