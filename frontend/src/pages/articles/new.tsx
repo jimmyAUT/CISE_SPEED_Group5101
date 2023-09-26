@@ -2,57 +2,56 @@ import { FormEvent, useState } from "react";
 import formStyles from "../../../styles/Form.module.scss";
 import { useRouter } from "next/router";
 import { createArticle } from "@/api/articles";
+import { Console } from "console";
 
 const NewDiscussion = () => {
+
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
-  // const [summary, setSummary] = useState("");
-  // const [linkedDiscussion, setLinkedDiscussion] = useState("");
-  const [claim, setClaim] = useState("");
-  const [evidence, setEvidence] = useState("");
+
+  const [showPopup, setShowPopup] = useState(false);
+
+  
+  const [submittedArticles, setSubmittedArticles] = useState<string[]>([]);
+  //const router = useRouter();
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const authorsString = authors.join(", "); //connect the authors by ',' and turn array to string
 
-    console.log(
-      JSON.stringify({
-        title,
-        authors,
-        source,
-        publication_year: pubYear,
-        doi,
-        claim,
-        evidence,
-      })
-    );
-    const atricleData = JSON.stringify({
+    
+      setTitle("");
+      setAuthors([""]);
+      setSource(""); 
+      setPubYear(0); 
+      setDoi("");
+      setShowPopup(true);
+
+    const subArticle = JSON.stringify({
       title,
       authors: authorsString,
       source,
       publication_year: pubYear,
       doi,
-      claim,
-      evidence,
     });
+    console.log(subArticle)
 
-    try {
-      const response = await createArticle(atricleData);
+    setSubmittedArticles(submittedArticles=> [...submittedArticles, subArticle]);
+    console.log(setSubmittedArticles)
 
-      console.log("Article created:", response.data);
-
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const router = useRouter();
-      router.push("/articles"); // direct to /articles page
-    } catch (error) {
-      console.error("Error creating article:", error);
-    }
+    setTitle("");
+    setAuthors([""]);
+    setSource("");
+    setPubYear(0);
+    setDoi("");
+    setShowPopup(true);
   };
-
-  // Some helper methods for the authors array
+    const closePopup = () => {
+      setShowPopup(false);
+    };
 
   const addAuthor = () => {
     setAuthors(authors.concat([""]));
@@ -136,8 +135,8 @@ const NewDiscussion = () => {
           className={formStyles.formItem}
           type="number"
           name="pubYear"
-          id="pubYear"
-          value={pubYear}
+          id="pubYear" 
+          value={pubYear === 0 ? "" : pubYear}
           onChange={(event) => {
             const val = event.target.value;
             if (val === "") {
@@ -159,26 +158,30 @@ const NewDiscussion = () => {
             setDoi(event.target.value);
           }}
         />
-
-        {/* <label htmlFor="summary">Summary:</label>
-        <textarea
-          className={formStyles.formTextArea}
-          name="summary"
-          value={summary}
-          onChange={(event) => setSummary(event.target.value)}
-        /> */}
-        <label htmlFor="claim">Claim:</label>
-        <textarea
-          className={formStyles.formTextArea}
-          name="claim"
-          value={claim}
-          onChange={(event) => setClaim(event.target.value)}
-        />
-
         <button className={formStyles.formItem} type="submit">
           Submit
         </button>
       </form>
+
+      {submittedArticles.length > 0 && (
+        <div>
+          <h2>Submitted Articles</h2>
+          <ul>
+            {submittedArticles.map((article, index) => (
+              <li key={index}>{article}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {showPopup && (
+        <div className={formStyles.popup}>
+          <button className={formStyles.closeButton} onClick={closePopup}>
+            &times;
+          </button>
+          <p>Thanks for submitting your article! We will sned an Email after your suggest is approve.</p>
+        </div>
+      )}
     </div>
   );
 };

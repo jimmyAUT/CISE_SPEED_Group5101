@@ -7,11 +7,11 @@ const Home = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("submitter"); // 默认角色是submitter
+  const [role, setRole] = useState("submitter"); // Default role is "submitter"
   const [user, setUser] = useState({});
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
+    // event.preventDefault();
     const account = JSON.stringify({
       email,
       password,
@@ -22,15 +22,6 @@ const Home = () => {
       const response = await login(account);
       console.log(response);
       setUser(response);
-      if (response === "moderator") {
-        router.push("/review");
-      } else if (response === "administrator") {
-        router.push("/admin");
-      } else if (response === "submitter") {
-        router.push("/articles/new");
-      } else if (response === "analyst") {
-        router.push("/analyst");
-      }
     } catch (error) {
       console.error("Login Error:", error);
     }
@@ -53,6 +44,7 @@ const Home = () => {
       <div>
         <a href="/articles/new">
         <button onClick={() => router.push('/articles/new')}>Suggest Articles</button>
+        {/* <button onClick={handleSuggestClick}>Suggest Articles</button> */}
         </a>
         <a href="/search">
         <button onClick={handleSearchClick}>Search Articles</button>
@@ -70,7 +62,7 @@ const Home = () => {
           >
             Register
           </button>
-          <form className={formStyles.form} onSubmit={submit}>
+          <form className={formStyles.form} onSubmit={handleLogin}>
             <input
               className={formStyles.formItem}
               type="text"
@@ -85,7 +77,7 @@ const Home = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {/* <select
+            <select
               className={formStyles.formItem}
               onChange={(e) => setRole(e.target.value)}
             >
@@ -93,7 +85,7 @@ const Home = () => {
               <option value="moderator">Moderator</option>
               <option value="analyst">Analyst</option>
               <option value="administrator">Administrator</option>
-            </select> */}
+            </select>
             <button className={formStyles.formItem} type="submit">
               Sign In
             </button>
