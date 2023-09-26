@@ -5,15 +5,15 @@ import { createArticle } from "@/api/articles";
 import { Console } from "console";
 
 const NewDiscussion = () => {
+
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
   const [showPopup, setShowPopup] = useState(false);
-  // const [submittedArticles, setSubmittedArticles] = useState<string[]>([]);
+  const [submittedArticles, setSubmittedArticles] = useState<any[]>([]);
   //const router = useRouter();
-  const [allSubmittedData, setAllSubmittedData] = useState<any[]>([]); // Store all submitted data as an array
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -27,23 +27,21 @@ const NewDiscussion = () => {
       setDoi("");
       setShowPopup(true);
 
-    const subArticle = JSON.stringify({
+    const subArticle = {
       title,
       authors: authorsString,
       source,
       publication_year: pubYear,
       doi,
-    });
-    console.log(subArticle)
+    };
+    // console.log(subArticle)
 
     // setSubmittedArticles(submittedArticles=> [...submittedArticles, subArticle]);
     // console.log(setSubmittedArticles)
-
-    setAllSubmittedData([...allSubmittedData, subArticle]);
+    setSubmittedArticles([...submittedArticles, subArticle]);
     clearForm();
   };
-
-  const clearForm = () => {
+    const clearForm = () => {
     setTitle("");
     setAuthors([""]);
     setSource("");
@@ -55,12 +53,8 @@ const NewDiscussion = () => {
       setShowPopup(false);
     };
 
-  // const addAuthor = () => {
-  //   setAuthors(authors.concat([""]));
-  // };
-
   const addAuthor = () => {
-    setAuthors([...authors, ""]);
+    setAuthors(authors.concat([""]));
   };
 
   const removeAuthor = (index: number) => {
@@ -177,9 +171,26 @@ const NewDiscussion = () => {
               <li key={index}>{article}</li>
             ))}
           </ul>
-        </div>
+        </div> in button show submit
       )} */}
-      
+
+      {submittedArticles.length > 0 && (
+  <div>
+    <h2>Submitted Articles</h2>
+    <ul>
+      {submittedArticles.map((article, index) => (
+        <li key={index}>
+          <pre>
+            {`[${Object.entries(article)
+              .map(([key, value]) => `"${key}": "${value}"`)
+              .join(", ")}]`}
+          </pre>
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
       {showPopup && (
         <div className={formStyles.popup}>
