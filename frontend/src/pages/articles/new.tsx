@@ -5,18 +5,15 @@ import { createArticle } from "@/api/articles";
 import { Console } from "console";
 
 const NewDiscussion = () => {
-
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
-
   const [showPopup, setShowPopup] = useState(false);
-
-  
-  const [submittedArticles, setSubmittedArticles] = useState<string[]>([]);
+  // const [submittedArticles, setSubmittedArticles] = useState<string[]>([]);
   //const router = useRouter();
+  const [allSubmittedData, setAllSubmittedData] = useState<any[]>([]); // Store all submitted data as an array
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,9 +36,14 @@ const NewDiscussion = () => {
     });
     console.log(subArticle)
 
-    setSubmittedArticles(submittedArticles=> [...submittedArticles, subArticle]);
-    console.log(setSubmittedArticles)
+    // setSubmittedArticles(submittedArticles=> [...submittedArticles, subArticle]);
+    // console.log(setSubmittedArticles)
 
+    setAllSubmittedData([...allSubmittedData, subArticle]);
+    clearForm();
+  };
+
+  const clearForm = () => {
     setTitle("");
     setAuthors([""]);
     setSource("");
@@ -53,8 +55,12 @@ const NewDiscussion = () => {
       setShowPopup(false);
     };
 
+  // const addAuthor = () => {
+  //   setAuthors(authors.concat([""]));
+  // };
+
   const addAuthor = () => {
-    setAuthors(authors.concat([""]));
+    setAuthors([...authors, ""]);
   };
 
   const removeAuthor = (index: number) => {
@@ -163,7 +169,7 @@ const NewDiscussion = () => {
         </button>
       </form>
 
-      {submittedArticles.length > 0 && (
+      {/* {submittedArticles.length > 0 && (
         <div>
           <h2>Submitted Articles</h2>
           <ul>
@@ -172,7 +178,8 @@ const NewDiscussion = () => {
             ))}
           </ul>
         </div>
-      )}
+      )} */}
+      
 
       {showPopup && (
         <div className={formStyles.popup}>
