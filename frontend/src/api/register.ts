@@ -29,7 +29,7 @@ export const login = async (account: any) => {
         "Content-Type": "application/json",
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }
