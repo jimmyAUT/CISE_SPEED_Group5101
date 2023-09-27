@@ -6,10 +6,11 @@ import {
   HttpStatus,
   // UseGuards,
   Req,
+  // UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
-// import { LocalGuard } from './local.guard';
+// import { LocalAuthGuard } from './localAuth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,7 @@ export class AuthController {
 
   // @UseGuards(LocalGuard)
   @Post('login')
+  // @UseGuards(LocalAuthGuard)
   async login(@Req() req: Request, @Res() res: Response) {
     const { email, password } = req.body;
     const user = await this.authService.validateUser(email, password);
