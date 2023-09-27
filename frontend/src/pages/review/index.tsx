@@ -1,9 +1,10 @@
 import { GetStaticProps, NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import reviewedArticles from "../../utils/dummydata";
 import { addRejected } from '@/api/review';
+import { getReviews, addReview } from './reviewsManager';
 
-interface ArticleInterface {
+export interface ArticleInterface {
   id: string;
   title: string;
   authors: string;
@@ -16,15 +17,27 @@ interface ArticleInterface {
 type ReviewProps = {
   articles: ArticleInterface[];
 };
+
+
 const Review: NextPage<ReviewProps> = ({ articles }) => {
   const [localArticles, setLocalArticles] = useState(articles);
+  const [reviews, setReviews] = useState<ArticleInterface[]>([]);
+
+  useEffect(() => {
+    console.log(reviews);
+  }, [reviews]);
 
   const handleInputChange = (id: string, field: keyof ArticleInterface, value: any) => {
     const updatedArticles = localArticles.map(article => 
       article.id === id ? { ...article, [field]: value } : article
     );
     setLocalArticles(updatedArticles);
-  }
+  };
+
+  const handlePassArticle = (article: ArticleInterface) => {
+    addReview(article);
+    console.log(getReviews());
+  };
 
   const handleAddArticle = (article: ArticleInterface) => {
     console.log("Adding article to DB:", article);
@@ -80,6 +93,14 @@ return (
                   onChange={(e) => handleInputChange(article.id, 'comment', e.target.value)}
                 />
               </td>
+              <td>
+                <button onClick={() => handleRejectArticle(article)}>Reject</button>
+                <button
+                  onClick={() => handlePassArticle(article)} // Updated onClick handler for the "Pass" button
+                >
+                  Pass
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -87,4 +108,29 @@ return (
     </div>
   );
 };
+
+export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
+    try {
+      // Directly use the reviewedArticles from dummydata
+      const articles = reviewedArticles.map((article, index) => {
+        return {
+          ...article,
+          id: `dummy-${index}`, // add a dummy id for now
+        };
+      });
+      return {
+        props: {
+          articles
+        }
+      };
+    } catch (error) {
+      console.error("Error fetching articles:", error);
+      return {
+        props: {
+          articles: []
+        }
+      };
+    }
+  };
+  
 export default Review;
