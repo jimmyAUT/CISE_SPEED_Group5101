@@ -36,6 +36,8 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@types/cookie": "^0.5.2"
+    "@types/cookie": "^0.5.2",
+    "@types/node": "20.6.3",
+    "typescript": "5.2.2"
   }
 }
