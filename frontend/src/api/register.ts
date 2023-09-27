@@ -10,7 +10,7 @@ export const api = axios.create({
 //register 邏輯
 export const register = async (account: any) => {
   try {
-    const response = await axios.post("/user/register", account, {
+    const response = await api.post("/user/register", account, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -24,12 +24,12 @@ export const register = async (account: any) => {
 // login 邏輯
 export const login = async (account: any) => {
   try {
-    const response = await axios.post("/auth/login", account, {
+    const response = await api.post("/auth/login", account, {
       headers: {
         "Content-Type": "application/json",
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }

@@ -18,8 +18,12 @@ export class SearchService {
     }
   }
   async searchArticles(searchDto: SearchDto): Promise<Article[]> {
-    const { keyword, year } = searchDto;
+    const { keyword, year, doi } = searchDto;
     let query: any = { title: { $regex: keyword, $options: 'i' } };
+
+    if (doi) {
+      query = { ...query, doi: { $regex: doi } };
+    }
 
     if (year) {
       query = { ...query, pubyear: { $regex: year } };
