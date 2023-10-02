@@ -1,13 +1,10 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState, useEffect } from "react";
-import reviewedArticles from "../../utils/dummydata";
-import { addRejected } from "@/api/review";
-
-interface ArticleInterfac{
 import { addRejected } from '@/api/review';
-import { getReviews, addReview } from './reviewsManager';
+import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 
-export interface ArticleInterface {
+
+interface ArticleInterface {
   id: string;
   title: string;
   authors: string;
@@ -15,11 +12,13 @@ export interface ArticleInterface {
   pubyear: string;
   doi: string;
   comment?: string;
+  status: string;
 }
 
 type ReviewProps = {
   articles: ArticleInterface[];
 };
+
 
 
 const Review: NextPage<ReviewProps> = ({ articles }) => {
