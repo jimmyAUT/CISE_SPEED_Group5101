@@ -6,9 +6,11 @@ import {
   Param,
   Put,
   Delete,
+  // Query,
 } from '@nestjs/common';
 import { Submit } from './submit.schema';
 import { SubmitService } from './submit.service';
+// import { SearchDto } from 'src/search/search.dto';
 
 @Controller('submit')
 export class SubmitController {
@@ -42,8 +44,8 @@ export class SubmitController {
     return this.submitService.remove(id);
   }
 
-  @Post()
-  async searchSubmit(@Body() status: string) {
-    return this.submitService.searchSubmit(status);
+  @Post('new')
+  async searchSubmit(@Body() query: any) {
+    return this.submitService.searchSubmit(query);
   }
 }

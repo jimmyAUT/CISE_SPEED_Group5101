@@ -1,7 +1,8 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState, useEffect } from "react";
-import reviewedArticles from "../../utils/dummydata";
+// import reviewedArticles from "../../utils/dummydata";
 import { addRejected } from "@/api/review";
+import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 
 interface ArticleInterface {
   id: string;
@@ -11,6 +12,7 @@ interface ArticleInterface {
   pubyear: string;
   doi: string;
   comment?: string;
+  status: string;
 }
 
 type ReviewProps = {
@@ -18,32 +20,33 @@ type ReviewProps = {
 };
 
 const Review: NextPage<ReviewProps> = ({ articles }) => {
-  const [localArticles, setLocalArticles] = useState(articles);
-  const [reviews, setReviews] = useState<ArticleInterface[]>([]);
-
-  useEffect(() => {
-    console.log(reviews);
-  }, [reviews]);
+  console.log(articles);
+  // const [localArticles, setLocalArticles] = useState(articles);
 
   const handleInputChange = (
     id: string,
     field: keyof ArticleInterface,
     value: any
   ) => {
-    const updatedArticles = localArticles.map((article) =>
+    const updatedArticles = articles.map((article) =>
       article.id === id ? { ...article, [field]: value } : article
     );
-    setLocalArticles(updatedArticles);
+    // setLocalArticles(updatedArticles);
   };
 
-  const handlePassArticle = (article: ArticleInterface) => {
-    setReviews((prevReviews) => [...prevReviews, article]);
-    console.log(reviews);
+  const handlePassArticle = async (article: ArticleInterface) => {
+    try {
+      await reviewSubmit(article.id, { status: "reviewed" });
+      // const updatedArticles = localArticles.filter(a => a.id !== article.id);
+      // setLocalArticles(updatedArticles);
+    } catch (error) {
+      console.error("Error passing article:", error);
+    }
   };
 
-  const handleAddArticle = (article: ArticleInterface) => {
-    console.log("Adding article to DB:", article);
-  };
+  // const handleAddArticle = (article: ArticleInterface) => {
+  //   console.log("Adding article to DB:", article);
+  // };
 
   const headers = [
     "Title",
@@ -57,23 +60,32 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     "Action",
   ];
 
+  //   const handleRejectArticle = async (article: ArticleInterface) => {
+  //   try {
+  //     const rejectedArticle = {
+  //       title: article.title,
+  //       authors: article.authors,
+  //       source: article.source,
+  //       pubyear: article.pubyear,
+  //       doi: article.doi,
+  //       comment: article.comment
+  //     };
+  //     const response = await addRejected(rejectedArticle);
+  //     console.log("Article rejected:", response);
+
+  //     // Update the local state
+  //     setLocalArticles(prevArticles => prevArticles.filter(a => a.id !== article.id));
+  //   } catch (error) {
+  //     console.error("Error rejecting article:", error);
+  //   }
+  // };
+
   const handleRejectArticle = async (article: ArticleInterface) => {
     try {
-      const rejectedArticle = {
-        title: article.title,
-        authors: article.authors,
-        source: article.source,
-        pubyear: article.pubyear,
-        doi: article.doi,
-        comment: article.comment,
-      };
-      const response = await addRejected(rejectedArticle);
-      console.log("Article rejected:", response);
-
-      // Update the local state
-      setLocalArticles((prevArticles) =>
-        prevArticles.filter((a) => a.id !== article.id)
-      );
+      await addRejected(article);
+      await removeSubmit(article.id);
+      // const updatedArticles = localArticles.filter(a => a.id !== article.id);
+      // setLocalArticles(updatedArticles);
     } catch (error) {
       console.error("Error rejecting article:", error);
     }
@@ -86,14 +98,14 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
         <thead>
           <tr>
             {headers
-              .filter((header) => !["Abstract", "Score"].includes(header))
+              .filter((header) => !["status"].includes(header))
               .map((header) => (
                 <th key={header}>{header}</th>
               ))}
           </tr>
         </thead>
         <tbody>
-          {localArticles.map((article) => (
+          {articles.map((article) => (
             <tr key={article.id}>
               <td>{article.title}</td>
               <td>{article.authors}</td>
@@ -113,11 +125,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                 <button onClick={() => handleRejectArticle(article)}>
                   Reject
                 </button>
-                <button
-                  onClick={() => handlePassArticle(article)} // Updated onClick handler for the "Pass" button
-                >
-                  Pass
-                </button>
+                <button onClick={() => handlePassArticle(article)}>Pass</button>
               </td>
             </tr>
           ))}
@@ -129,13 +137,8 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
   try {
-    // Directly use the reviewedArticles from dummydata
-    const articles = reviewedArticles.map((article, index) => {
-      return {
-        ...article,
-        id: `dummy-${index}`, // add a dummy id for now
-      };
-    });
+    const query = { status: "unreview" };
+    const articles = await searchSubmit(query);
     return {
       props: {
         articles,
@@ -152,4 +155,3 @@ export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
 };
 
 export default Review;
-export const reviews = [];

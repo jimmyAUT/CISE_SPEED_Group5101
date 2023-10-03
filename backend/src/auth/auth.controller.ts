@@ -6,17 +6,18 @@ import {
   HttpStatus,
   // UseGuards,
   Req,
-  // UseGuards,
+  Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
-// import { LocalAuthGuard } from './localAuth.guard';
+// import { LocalAuthGuard } from './loaclAuth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
+  // @Session()
   async register(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -33,7 +34,6 @@ export class AuthController {
     }
   }
 
-  // @UseGuards(LocalGuard)
   @Post('login')
   // @UseGuards(LocalAuthGuard)
   async login(@Req() req: Request, @Res() res: Response) {
@@ -49,4 +49,10 @@ export class AuthController {
         .json({ message: 'Invalid credentials' });
     }
   }
+
+  // @Post('logout')
+  // async logout(@Req() req: Request, @Res() res: Response) {
+  //   req.logout(); // 清除会话
+  //   return res.status(200).json({ message: 'Logout successful' });
+  // }
 }
