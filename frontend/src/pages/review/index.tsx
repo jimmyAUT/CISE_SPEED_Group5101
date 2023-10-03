@@ -19,78 +19,40 @@ type ReviewProps = {
   articles: ArticleInterface[];
 };
 
-
-
 const Review: NextPage<ReviewProps> = ({ articles }) => {
-  const [localArticles, setLocalArticles] = useState(articles);
-  const [reviews, setReviews] = useState<ArticleInterface[]>([]);
 
-  useEffect(() => {
-    console.log(reviews);
-  }, [reviews]);
-
-  const handleInputChange = (
-    id: string,
-    field: keyof ArticleInterface,
-    value: any
-  ) => {
-    const updatedArticles = localArticles.map((article) =>
   const handleInputChange = (id: string, field: keyof ArticleInterface, value: any) => {
-    const updatedArticles = localArticles.map(art
+    const updatedArticles = articles.map(article => 
       article.id === id ? { ...article, [field]: value } : article
     );
-    setLocalArticles(updatedArticles);
   };
 
-  const handlePassArticle = (article: ArticleInterface) => {
-
-    setReviews((prevReviews) => [...prevReviews, article]);
-    console.log(reviews);
-    addReview(article);
-    console.log(getReviews());
-  };
-
-  const handleAddArticle = (article: ArticleInterface) => {
-    console.log("Adding article to DB:", article);
-  };
-
-  const headers = [
-    "Title",
-    "Authors",
-    "Source",
-    "Publication Year",
-    "DOI",
-    "Comment",
-    "Abstract",
-    "Score",
-    "Action",
-  ];
-
-  const handleRejectArticle = async (article: ArticleInterface) => {
+  const handlePassArticle = async (article: ArticleInterface) => {
     try {
-      const rejectedArticle = {
-        title: article.title,
-        authors: article.authors,
-        source: article.source,
-        pubyear: article.pubyear,
-        doi: article.doi,
-        comment: article.comment,
-      };
-      const response = await addRejected(rejectedArticle);
-      console.log("Article rejected:", response);
-
-      // Update the local state
-      setLocalArticles((prevArticles) =>
-        prevArticles.filter((a) => a.id !== article.id)
-      );
+      await reviewSubmit(article.id, { status: "reviewed" });
+      const updatedArticles = articles.filter(a => a.id !== article.id);
     } catch (error) {
-      console.error("Error rejecting article:", error);
+      console.error("Error passing article:", error);
     }
   };
 
-  return (
+
+  const headers = [
     "Title", "Authors", "Source", "Publication Year", "DOI", "Comment", "Abstract", "Score", "Action"
   ];
+
+
+
+const handleRejectArticle = async (article: ArticleInterface) => {
+  try {
+    await addRejected(article);
+    await removeSubmit(article.id);
+    const updatedArticles = articles.filter(a => a.id !== article.id);
+    // setLocalArticles(updatedArticles);
+  } catch (error) {
+    console.error("Error rejecting article:", error);
+  }
+};
 
   const handleRejectArticle = async (article: ArticleInterface) => {
   try {
