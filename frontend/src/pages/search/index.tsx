@@ -43,6 +43,18 @@ const SearchPage: React.FC = () => {
       const response = await searchArticles(query);
       if (Array.isArray(response) && response.length > 0) {
         setSearchResults(response);
+
+        const filteredResults = response.filter((article: any) => {
+          const pubYear = parseInt(article.pubyear, 10);
+          if (pubYear >= parseInt(startYear, 10) && pubYear <= parseInt(endYear, 10)) {
+            return true;
+          }
+          return false;
+        });
+
+        if (filteredResults.length > 0) {
+          setSearchResults(filteredResults);
+        }
       } else {
         console.log('No articles found for the specified year range.');
         setSearchResults([]); // Set searchResults to an empty array to clear any previous search results.
@@ -52,48 +64,9 @@ const SearchPage: React.FC = () => {
       setSearchResults([]); // Set searchResults to an empty array in case of an error.
     }
   
-    //   if (response.length > 0) {
-    //     setSearchResults(response);
-    //   } else {
-    //     console.log('No articles found for the specified year range.');
-    //   }
-    // } catch (error) {
-    //   console.error('Error searching articles:', error);
-    // }
-
     setLoading(false);
   };
   
-
-  //   try {
-  //     const response = await searchArticles(query);
-  //     if (response.length !== 0) {
-  //       setSearchResults(response);
-  //     } else {
-  //       // If no results found for the current year, try searching for the next year
-  //       if (searchYear) {
-  //         const nextYearQuery = JSON.stringify({
-  //           keyword: searchQuery,
-  //           year: String(parseInt(searchYear) + 1),
-  //         });
-  //         const nextYearResponse = await searchArticles(nextYearQuery);
-
-  //         if (nextYearResponse.length !== 0) {
-  //           setSearchResults(nextYearResponse);
-  //         } else {
-  //           console.log('No result');
-  //         }
-  //       } else {
-  //         console.log('No result');
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error searching article:', error);
-  //   }
-
-  //   setLoading(false);
-  // };
-
   return (
     <div className="container">
       <h2>Search SE Methods</h2>
