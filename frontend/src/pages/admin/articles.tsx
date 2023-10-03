@@ -1,4 +1,4 @@
-import { GetStaticProps, NextPage, GetServerSideProps } from "next";
+import { NextPage, GetServerSideProps } from "next";
 import SortableTable from "../../components/table/SortableTable";
 import { useState } from "react";
 import { getArticles, removeArticle } from "@/api/articles";
@@ -59,30 +59,6 @@ export const getServerSideProps: GetServerSideProps<ArticlesProps> = async (
 ) => {
   try {
     const articles = await getArticles();
-    // articles.map(
-    //   (article: {
-    //     id: any;
-    //     _id: any;
-    //     title: any;
-    //     authors: any;
-    //     source: any;
-    //     pubyear: any;
-    //     doi: any;
-    //     abstract: any;
-    //     comment: any;
-    //     score: any;
-    //   }) => ({
-    //     id: article.id ?? article._id,
-    //     title: article.title,
-    //     authors: article.authors,
-    //     source: article.source,
-    //     pubyear: article.pubyear,
-    //     doi: article.doi,
-    //     abstract: article.abstract,
-    //     comment: article.comment,
-    //     score: article.score,
-    //   })
-    // );
     return {
       props: {
         articles,

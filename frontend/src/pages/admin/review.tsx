@@ -1,6 +1,6 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState } from "react";
-
+import { createArticle } from "@/api/articles";
 import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 import { addRejected } from "@/api/review";
 
@@ -12,6 +12,8 @@ interface ArticleInterface {
   pubyear: number;
   doi: string;
   comment?: string;
+  abstract?: string;
+  score?: number;
 }
 
 type ReviewProps = {
@@ -37,29 +39,32 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     setSubmitArticles(updatedArticles);
   };
 
-  const handlePass = async (article: ArticleInterface) => {
-    const id = article._id;
-    const query = {
+  const handleAddArticle = async (article: ArticleInterface) => {
+    console.log("Adding article to DB:", article);
+
+    const dataToSend = {
       title: article.title,
       authors: article.authors,
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
       comment: article.comment,
-      status: "reviewed",
+      abstract: article.abstract,
+      score: article.score,
     };
+
     try {
-      const response = await reviewSubmit(id, query);
-      console.log("Article pass:", response);
+      const response = await createArticle(JSON.stringify(dataToSend));
+      console.log("Article added:", response);
 
       // Display an alert after successful addition
-      alert("This article has successfully been pass to the analyst!");
+      alert("This article has successfully been added to the database!");
 
       setSubmitArticles((prevArticles) =>
         prevArticles.filter((a) => a._id !== article._id)
       );
     } catch (error) {
-      console.error("Error passing article:", error);
+      console.error("Error adding article:", error);
     }
   };
 
@@ -91,6 +96,8 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     "Publication Year",
     "DOI",
     "Comment",
+    "Abstract",
+    "Score",
     "Action",
   ];
 
@@ -123,11 +130,41 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                 />
               </td>
               <td>
+                <input
+                  type="text"
+                  value={article.abstract || ""}
+                  onChange={(e) =>
+                    handleInputChange(article._id, "abstract", e.target.value)
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={article.score || ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      article._id,
+                      "score",
+                      Number(e.target.value)
+                    )
+                  }
+                />
+              </td>
+              <td>
                 <button
-                  disabled={!article.comment}
-                  onClick={() => handlePass(article)}
+                  disabled={
+                    !article.comment ||
+                    !article.score ||
+                    !article.abstract ||
+                    article.score < 1 ||
+                    article.score > 10
+                  }
+                  onClick={() => handleAddArticle(article)}
                 >
-                  Pass
+                  Add
                 </button>
                 <button onClick={() => handleRejectArticle(article)}>
                   Reject
