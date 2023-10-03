@@ -37,7 +37,6 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
     try {
       await removeArticle(articleId); // 调用删除文章的 API
 
-      // 删除用户后，更新 usersData 状态
       const updatedArticleData = articlesData.filter(
         (article) => article._id !== articleId
       );
