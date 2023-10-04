@@ -9,8 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        node-version: [16.x, 18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -26,26 +25,3 @@ jobs:
           npm install
       - run: npm run build --if-present
       - run: npm run test
-# on:
-#   push:
-#     branches:
-#       - jimmy
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - uses: actions/checkout@v2
-#       - name: Install dependencies
-#         run: |
-#           cd backend
-#           npm install
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v2
-#         with:
-#           node-version: "18"
-
-#       - name: Run module tests
-#         run: npm run test
