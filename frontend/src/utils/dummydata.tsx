@@ -1,4 +1,4 @@
-const articles = [
+const reviewedArticles = [
   {
     id: "1",
     title:
@@ -55,4 +55,4 @@ const articles = [
     evidence: "weak against",
   },
 ];
-export default articles;
+export default reviewedArticles;
