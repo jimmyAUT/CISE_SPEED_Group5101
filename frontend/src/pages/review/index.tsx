@@ -1,14 +1,15 @@
 import { GetStaticProps, NextPage } from "next";
-import { useState, useEffect } from "react";
-import reviewedArticles from "../../utils/dummydata";
+import { useState } from "react";
+
+import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 import { addRejected } from "@/api/review";
 
 interface ArticleInterface {
-  id: string;
+  _id: string;
   title: string;
   authors: string;
   source: string;
-  pubyear: string;
+  pubyear: number;
   doi: string;
   comment?: string;
 }
@@ -18,31 +19,69 @@ type ReviewProps = {
 };
 
 const Review: NextPage<ReviewProps> = ({ articles }) => {
-  const [localArticles, setLocalArticles] = useState(articles);
-  const [reviews, setReviews] = useState<ArticleInterface[]>([]);
-
-  useEffect(() => {
-    console.log(reviews);
-  }, [reviews]);
+  const [submitArticles, setSubmitArticles] = useState(articles);
 
   const handleInputChange = (
     id: string,
     field: keyof ArticleInterface,
     value: any
   ) => {
-    const updatedArticles = localArticles.map((article) =>
-      article.id === id ? { ...article, [field]: value } : article
+    const updatedArticles = submitArticles.map((article) =>
+      article._id === id
+        ? {
+            ...article,
+            [field]: value,
+          }
+        : article
     );
-    setLocalArticles(updatedArticles);
+    setSubmitArticles(updatedArticles);
   };
 
-  const handlePassArticle = (article: ArticleInterface) => {
-    setReviews((prevReviews) => [...prevReviews, article]);
-    console.log(reviews);
+  const handlePass = async (article: ArticleInterface) => {
+    const id = article._id;
+    const query = {
+      title: article.title,
+      authors: article.authors,
+      source: article.source,
+      publication_year: article.pubyear,
+      doi: article.doi,
+      comment: article.comment,
+      status: "reviewed",
+    };
+    try {
+      const response = await reviewSubmit(id, query);
+      console.log("Article pass:", response);
+
+      // Display an alert after successful addition
+      alert("This article has successfully been pass to the analyst!");
+
+      setSubmitArticles((prevArticles) =>
+        prevArticles.filter((a) => a._id !== article._id)
+      );
+    } catch (error) {
+      console.error("Error passing article:", error);
+    }
   };
 
-  const handleAddArticle = (article: ArticleInterface) => {
-    console.log("Adding article to DB:", article);
+  const handleRejectArticle = async (article: ArticleInterface) => {
+    const rejectedData = {
+      title: article.title,
+      authors: article.authors,
+      source: article.source,
+      publication_year: article.pubyear,
+      doi: article.doi,
+      comment: article.comment,
+    };
+    try {
+      await addRejected(JSON.stringify(rejectedData));
+      await removeSubmit(article._id);
+      alert("This article has successfully added to Rejected Database!");
+      setSubmitArticles((prevArticles) =>
+        prevArticles.filter((a) => a._id !== article._id)
+      );
+    } catch (error) {
+      console.error("Error rejecting article:", error);
+    }
   };
 
   const headers = [
@@ -52,49 +91,23 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     "Publication Year",
     "DOI",
     "Comment",
-    "Abstract",
-    "Score",
     "Action",
   ];
 
-  const handleRejectArticle = async (article: ArticleInterface) => {
-    try {
-      const rejectedArticle = {
-        title: article.title,
-        authors: article.authors,
-        source: article.source,
-        pubyear: article.pubyear,
-        doi: article.doi,
-        comment: article.comment,
-      };
-      const response = await addRejected(rejectedArticle);
-      console.log("Article rejected:", response);
-
-      // Update the local state
-      setLocalArticles((prevArticles) =>
-        prevArticles.filter((a) => a.id !== article.id)
-      );
-    } catch (error) {
-      console.error("Error rejecting article:", error);
-    }
-  };
-
   return (
     <div className="container">
-      <h1>Review Page</h1>
+      <h1>Analyst Review Page</h1>
       <table>
         <thead>
           <tr>
-            {headers
-              .filter((header) => !["Abstract", "Score"].includes(header))
-              .map((header) => (
-                <th key={header}>{header}</th>
-              ))}
+            {headers.map((header) => (
+              <th key={header}>{header}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {localArticles.map((article) => (
-            <tr key={article.id}>
+          {submitArticles.map((article) => (
+            <tr key={article._id}>
               <td>{article.title}</td>
               <td>{article.authors}</td>
               <td>{article.source}</td>
@@ -105,18 +118,19 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                   type="text"
                   value={article.comment || ""}
                   onChange={(e) =>
-                    handleInputChange(article.id, "comment", e.target.value)
+                    handleInputChange(article._id, "comment", e.target.value)
                   }
                 />
               </td>
               <td>
-                <button onClick={() => handleRejectArticle(article)}>
-                  Reject
-                </button>
                 <button
-                  onClick={() => handlePassArticle(article)} // Updated onClick handler for the "Pass" button
+                  disabled={!article.comment}
+                  onClick={() => handlePass(article)}
                 >
                   Pass
+                </button>
+                <button onClick={() => handleRejectArticle(article)}>
+                  Reject
                 </button>
               </td>
             </tr>
@@ -129,13 +143,8 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
 
 export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
   try {
-    // Directly use the reviewedArticles from dummydata
-    const articles = reviewedArticles.map((article, index) => {
-      return {
-        ...article,
-        id: `dummy-${index}`, // add a dummy id for now
-      };
-    });
+    const query = { status: "unreview" };
+    const articles = await searchSubmit(query);
     return {
       props: {
         articles,
@@ -152,4 +161,3 @@ export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
 };
 
 export default Review;
-export const reviews = [];

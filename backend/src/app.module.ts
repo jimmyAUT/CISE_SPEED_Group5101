@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { SearchModule } from './search/search.module';
 import { RejectedModule } from './rejected/rejected.module';
 import { ReviewModule } from './review/review.module';
+import { SubmitModule } from './submit/submit.module';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -23,6 +24,7 @@ const mongoDB = process.env.mongoDB;
     SearchModule,
     RejectedModule,
     ReviewModule,
+    SubmitModule,
   ],
   controllers: [AppController],
   providers: [AppService],

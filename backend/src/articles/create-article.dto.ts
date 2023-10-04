@@ -11,4 +11,5 @@ export class CreateArticleDto {
   doi: string;
   abstract: string;
   comment: string;
+  score: string;
 }

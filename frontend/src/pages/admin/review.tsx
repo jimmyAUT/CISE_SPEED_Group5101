@@ -1,7 +1,8 @@
 import { GetStaticProps, NextPage } from "next";
 import { useState } from "react";
 import { createArticle } from "@/api/articles";
-import { searchSubmit } from "@/api/submit";
+import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
+import { addRejected } from "@/api/review";
 
 interface ArticleInterface {
   _id: string;
@@ -15,22 +16,27 @@ interface ArticleInterface {
   score?: number;
 }
 
-type AnalystProps = {
+type ReviewProps = {
   articles: ArticleInterface[];
 };
 
-const Analyst: NextPage<AnalystProps> = ({ articles }) => {
-  const [localArticles, setLocalArticles] = useState(articles);
+const Review: NextPage<ReviewProps> = ({ articles }) => {
+  const [submitArticles, setSubmitArticles] = useState(articles);
 
   const handleInputChange = (
     id: string,
     field: keyof ArticleInterface,
     value: any
   ) => {
-    const updatedArticles = localArticles.map((article) =>
-      article._id === id ? { ...article, [field]: value } : article
+    const updatedArticles = submitArticles.map((article) =>
+      article._id === id
+        ? {
+            ...article,
+            [field]: value,
+          }
+        : article
     );
-    setLocalArticles(updatedArticles);
+    setSubmitArticles(updatedArticles);
   };
 
   const handleAddArticle = async (article: ArticleInterface) => {
@@ -54,11 +60,32 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       // Display an alert after successful addition
       alert("This article has successfully been added to the database!");
 
-      setLocalArticles((prevArticles) =>
+      setSubmitArticles((prevArticles) =>
         prevArticles.filter((a) => a._id !== article._id)
       );
     } catch (error) {
       console.error("Error adding article:", error);
+    }
+  };
+
+  const handleRejectArticle = async (article: ArticleInterface) => {
+    const rejectedData = {
+      title: article.title,
+      authors: article.authors,
+      source: article.source,
+      publication_year: article.pubyear,
+      doi: article.doi,
+      comment: article.comment,
+    };
+    try {
+      await addRejected(JSON.stringify(rejectedData));
+      await removeSubmit(article._id);
+      alert("This article has successfully added to Rejected Database!");
+      setSubmitArticles((prevArticles) =>
+        prevArticles.filter((a) => a._id !== article._id)
+      );
+    } catch (error) {
+      console.error("Error rejecting article:", error);
     }
   };
 
@@ -86,11 +113,10 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
           </tr>
         </thead>
         <tbody>
-          {localArticles.map((article) => (
+          {submitArticles.map((article) => (
             <tr key={article._id}>
               <td>{article.title}</td>
-              <td>{article.authors}</td>{" "}
-              {/* Display authors as a comma-separated string */}
+              <td>{article.authors}</td>
               <td>{article.source}</td>
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
@@ -132,12 +158,16 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
                   disabled={
                     !article.comment ||
                     !article.score ||
+                    !article.abstract ||
                     article.score < 1 ||
                     article.score > 10
                   }
                   onClick={() => handleAddArticle(article)}
                 >
                   Add
+                </button>
+                <button onClick={() => handleRejectArticle(article)}>
+                  Reject
                 </button>
               </td>
             </tr>
@@ -148,9 +178,9 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
+export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
   try {
-    const query = { status: "reviewed" };
+    const query = { status: "unreview" };
     const articles = await searchSubmit(query);
     return {
       props: {
@@ -167,4 +197,4 @@ export const getStaticProps: GetStaticProps<AnalystProps> = async () => {
   }
 };
 
-export default Analyst;
+export default Review;
