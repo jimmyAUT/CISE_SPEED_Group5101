@@ -6,12 +6,12 @@ import {
   Param,
   Put,
   Delete,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
 import { UserDto } from './user.dto';
-import { LocalAuthGuard } from 'src/auth/loaclAuth.guard';
+// import { LocalAuthGuard } from 'src/auth/loaclAuth.guard';
 
 @Controller('user')
 export class UserController {
@@ -28,7 +28,7 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
@@ -39,7 +39,7 @@ export class UserController {
   //   }
 
   @Put(':id')
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UserDto,
@@ -48,7 +48,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  @UseGuards(LocalAuthGuard)
+  // @UseGuards(LocalAuthGuard)
   async remove(@Param('id') id: string): Promise<User> {
     return this.userService.remove(id);
   }
