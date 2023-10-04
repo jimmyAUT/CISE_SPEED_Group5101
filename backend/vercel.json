@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "SPEED",
+  "name": "SPEED_SERVER",
   "builds": [
     {
       "src": "dist/main.js",
