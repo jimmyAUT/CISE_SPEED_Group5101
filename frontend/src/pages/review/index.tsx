@@ -1,5 +1,5 @@
 import { GetStaticProps, NextPage } from "next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 import { addRejected } from "@/api/review";
@@ -11,7 +11,7 @@ interface ArticleInterface {
   source: string;
   pubyear: number;
   doi: string;
-  comment?: string;
+  method?: string;
 }
 
 type ReviewProps = {
@@ -21,16 +21,16 @@ type ReviewProps = {
 const Review: NextPage<ReviewProps> = ({ articles }) => {
   const [submitArticles, setSubmitArticles] = useState(articles);
 
-  const handleInputChange = (
-    id: string,
-    field: keyof ArticleInterface,
-    value: any
-  ) => {
+  useEffect(() => {
+    alert("Receive a new submission.");
+  }, []);
+  
+  const handleMethodChange = (id: string, method: string) => {
     const updatedArticles = submitArticles.map((article) =>
       article._id === id
         ? {
             ...article,
-            [field]: value,
+            method,
           }
         : article
     );
@@ -45,7 +45,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      comment: article.comment,
+      method: article.method,
       status: "reviewed",
     };
     try {
@@ -70,7 +70,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      comment: article.comment,
+      method: article.method,
     };
     try {
       await addRejected(JSON.stringify(rejectedData));
@@ -90,13 +90,13 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     "Source",
     "Publication Year",
     "DOI",
-    "Comment",
+    "Method",
     "Action",
   ];
 
   return (
     <div className="container">
-      <h1>Analyst Review Page</h1>
+      <h1>Moderator Review Page</h1>
       <table>
         <thead>
           <tr>
@@ -114,17 +114,19 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
               <td>
-                <input
-                  type="text"
-                  value={article.comment || ""}
-                  onChange={(e) =>
-                    handleInputChange(article._id, "comment", e.target.value)
-                  }
-                />
+                <select
+                  value={article.method || ""}
+                  onChange={(e) => handleMethodChange(article._id, e.target.value)}
+                >
+                  <option value="">Select method</option>
+                  <option value="method 1">method 1</option>
+                  <option value="method 2">method 2</option>
+                  <option value="method 3">method 3</option>
+                </select>
               </td>
               <td>
                 <button
-                  disabled={!article.comment}
+                  disabled={!article.method}
                   onClick={() => handlePass(article)}
                 >
                   Pass
@@ -140,7 +142,6 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     </div>
   );
 };
-
 export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
   try {
     const query = { status: "unreview" };
