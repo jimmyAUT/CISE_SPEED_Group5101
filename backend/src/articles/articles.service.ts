@@ -87,4 +87,20 @@ export class ArticlesService {
       };
     }
   }
+
+  async updateScore(id: string, addScore: string): Promise<Article> {
+    try {
+      const article = await this.articleModel.findById(id).exec();
+      const oldScore = article.score.valueOf() * article.voteCount;
+      const newScore =
+        (oldScore + parseFloat(addScore)) / (article.voteCount + 1);
+
+      article.score = newScore;
+      article.voteCount += 1;
+      const updatedArticle = await article.save();
+      return updatedArticle;
+    } catch (error) {
+      throw new Error('Error updating title: ' + error.message);
+    }
+  }
 }
