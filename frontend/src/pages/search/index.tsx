@@ -1,82 +1,77 @@
-import React, { FormEvent, useState } from 'react';
-import formStyles from '../../../styles/Form.module.scss';
-import SortableTable from '@/components/table/SortableTable';
-import { useRouter } from 'next/router';
-import { searchArticles } from '@/api/search';
+import React, { useState } from "react";
+import formStyles from "../../../styles/Form.module.scss";
+import SortableTable from "@/components/table/SortableTable";
+import { useRouter } from "next/router";
+import { searchArticles } from "@/api/search";
 
 const SearchPage: React.FC = () => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchYear, setSearchYear] = useState<string>('');
-  const [startYear, setStartYear] = useState<string>('');
-  const [endYear, setEndYear] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<any[]>([searchArticles]);
+  // const [searchQuery, setSearchQuery] = useState<string>("");
+  // const [searchYear, setSearchYear] = useState<string>("");
+  const [startYear, setStartYear] = useState<string>("");
+  const [endYear, setEndYear] = useState<string>("");
+  const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   const headers = [
-    { key: 'title', label: 'Title' },
-    { key: 'authors', label: 'Authors' },
-    { key: 'source', label: 'Source' },
-    { key: 'pubyear', label: 'Publication Year' },
-    { key: 'doi', label: 'DOI' },
-    { key: 'score', label: 'Score' },
+    { key: "title", label: "Title" },
+    { key: "authors", label: "Authors" },
+    { key: "source", label: "Source" },
+    { key: "pubyear", label: "Publication Year" },
+    { key: "doi", label: "DOI" },
+    { key: "score", label: "Score" },
+    { key: "range", label: "Score" },
   ];
 
   const handleSearch = async () => {
     setLoading(true);
+    const query = {
+      // keyword: searchQuery,
+      method: selectedMethod,
+      // startYear,
+      // endYear,
+      // year: searchYear,
+    };
 
-    const query = ({
-      keyword: searchQuery,
-      startYear,
-      endYear,
-      year: searchYear,
-    });
-
-    if (startYear && endYear) {
-      query.startYear = startYear;
-      query.endYear = endYear;
-    } else if (searchYear) {
-      query.year = searchYear;
-    }
-  
     try {
       const response = await searchArticles(query);
       if (Array.isArray(response) && response.length > 0) {
         setSearchResults(response);
-
-        const filteredResults = response.filter((article: any) => {
-          const pubYear = parseInt(article.pubyear, 10);
-          if (pubYear >= parseInt(startYear, 10) && pubYear <= parseInt(endYear, 10)) {
-            return true;
-          }
-          return false;
-        });
-
-        if (filteredResults.length > 0) {
-          setSearchResults(filteredResults);
-        }
       } else {
-        console.log('No articles found for the specified year range.');
-        setSearchResults([]); // Set searchResults to an empty array to clear any previous search results.
+        console.log("No articles found for the specified criteria.");
+        setSearchResults([]); // Clear previous search results.
       }
     } catch (error) {
-      console.error('Error searching articles:', error);
-      setSearchResults([]); // Set searchResults to an empty array in case of an error.
+      console.error("Error searching articles:", error);
+      setSearchResults([]); // Clear results in case of an error.
     }
-  
+
     setLoading(false);
   };
-  
+
   return (
     <div className="container">
       <h2>Search SE Methods</h2>
       <div>
-        <input
+        {/* <input
           type="text"
           placeholder="Search SE Method by Keyword"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        /> */}
+        <select 
+          value={selectedMethod} 
+          onChange={(e) => setSelectedMethod(e.target.value)}
+        >
+          <option value="">Select a method</option>
+          <option value="method1">Method 1</option>
+          <option value="method2">Method 2</option>
+          <option value="method3">Method 3</option>
+        </select>
+        <button onClick={handleSearch} disabled={loading}>
+          {loading ? "Searching..." : "Search"}
+        </button>
         <input
           type="text"
           placeholder="Start Year"
@@ -89,15 +84,12 @@ const SearchPage: React.FC = () => {
           value={endYear}
           onChange={(e) => setEndYear(e.target.value)}
         />
-        <input
+        {/* <input
           type="text"
           placeholder="Search Year"
           value={searchYear}
           onChange={(e) => setSearchYear(e.target.value)}
-        />
-        <button onClick={handleSearch} disabled={loading}>
-          {loading ? 'Searching...' : 'Search'}
-        </button>
+        /> */}
       </div>
 
       {searchResults.length > 0 ? (
@@ -105,8 +97,6 @@ const SearchPage: React.FC = () => {
       ) : (
         <p>No articles found.</p>
       )}
-
-      <button onClick={() => router.push('/')}>Home</button>
     </div>
   );
 };
