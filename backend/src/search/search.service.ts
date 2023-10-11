@@ -35,4 +35,31 @@ export class SearchService {
       throw error;
     }
   }
+
+  async searchMethod(searchDto: SearchDto): Promise<Article[]> {
+    const { method } = searchDto;
+    const query: any = { method: { $regex: method, $options: 'i' } };
+    try {
+      const articles = await this.articleModel.find(query).exec();
+      return articles;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSeList() {
+    try {
+      const articles = await this.articleModel.find().exec();
+      const seList = [];
+      articles.map((article) => {
+        const se = article.method;
+        if (!seList.includes(se) && se !== null) {
+          seList.push(se);
+        }
+      });
+      return seList;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -1,6 +1,6 @@
 import { GetStaticProps, NextPage } from "next";
-import { useState, useEffect } from "react";
-
+import { useState } from "react";
+import { createArticle } from "@/api/articles";
 import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 import { addRejected } from "@/api/review";
 
@@ -11,7 +11,9 @@ interface ArticleInterface {
   source: string;
   pubyear: number;
   doi: string;
-  method?: string;
+  comment?: string;
+  abstract?: string;
+  score?: number;
 }
 
 type ReviewProps = {
@@ -21,45 +23,48 @@ type ReviewProps = {
 const Review: NextPage<ReviewProps> = ({ articles }) => {
   const [submitArticles, setSubmitArticles] = useState(articles);
 
-  useEffect(() => {
-    alert("Receive a new submission.");
-  }, []);
-  
-  const handleMethodChange = (id: string, method: string) => {
+  const handleInputChange = (
+    id: string,
+    field: keyof ArticleInterface,
+    value: any
+  ) => {
     const updatedArticles = submitArticles.map((article) =>
       article._id === id
         ? {
             ...article,
-            method,
+            [field]: value,
           }
         : article
     );
     setSubmitArticles(updatedArticles);
   };
 
-  const handlePass = async (article: ArticleInterface) => {
-    const id = article._id;
-    const query = {
+  const handleAddArticle = async (article: ArticleInterface) => {
+    console.log("Adding article to DB:", article);
+
+    const dataToSend = {
       title: article.title,
       authors: article.authors,
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      method: article.method,
-      status: "reviewed",
+      comment: article.comment,
+      abstract: article.abstract,
+      score: article.score,
     };
+
     try {
-      const response = await reviewSubmit(id, query);
-      console.log("Article pass:", response);
+      const response = await createArticle(JSON.stringify(dataToSend));
+      console.log("Article added:", response);
 
       // Display an alert after successful addition
-      alert("This article has successfully been pass to the analyst!");
+      alert("This article has successfully been added to the database!");
 
       setSubmitArticles((prevArticles) =>
         prevArticles.filter((a) => a._id !== article._id)
       );
     } catch (error) {
-      console.error("Error passing article:", error);
+      console.error("Error adding article:", error);
     }
   };
 
@@ -70,7 +75,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      method: article.method,
+      comment: article.comment,
     };
     try {
       await addRejected(JSON.stringify(rejectedData));
@@ -90,13 +95,15 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     "Source",
     "Publication Year",
     "DOI",
-    "Method",
+    "Comment",
+    "Abstract",
+    "Score",
     "Action",
   ];
 
   return (
     <div className="container">
-      <h1>Moderator Review Page</h1>
+      <h1>Analyst Review Page</h1>
       <table>
         <thead>
           <tr>
@@ -114,22 +121,50 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
               <td>
-                <select
-                  value={article.method || ""}
-                  onChange={(e) => handleMethodChange(article._id, e.target.value)}
-                >
-                  <option value="">Select method</option>
-                  <option value="method 1">method 1</option>
-                  <option value="method 2">method 2</option>
-                  <option value="method 3">method 3</option>
-                </select>
+                <input
+                  type="text"
+                  value={article.comment || ""}
+                  onChange={(e) =>
+                    handleInputChange(article._id, "comment", e.target.value)
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="text"
+                  value={article.abstract || ""}
+                  onChange={(e) =>
+                    handleInputChange(article._id, "abstract", e.target.value)
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={article.score || ""}
+                  onChange={(e) =>
+                    handleInputChange(
+                      article._id,
+                      "score",
+                      Number(e.target.value)
+                    )
+                  }
+                />
               </td>
               <td>
                 <button
-                  disabled={!article.method}
-                  onClick={() => handlePass(article)}
+                  disabled={
+                    !article.comment ||
+                    !article.score ||
+                    !article.abstract ||
+                    article.score < 1 ||
+                    article.score > 10
+                  }
+                  onClick={() => handleAddArticle(article)}
                 >
-                  Pass
+                  Add
                 </button>
                 <button onClick={() => handleRejectArticle(article)}>
                   Reject
@@ -142,6 +177,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     </div>
   );
 };
+
 export const getStaticProps: GetStaticProps<ReviewProps> = async () => {
   try {
     const query = { status: "unreview" };

@@ -42,8 +42,8 @@ export class SubmitController {
     return this.submitService.remove(id);
   }
 
-  @Post()
-  async searchSubmit(@Body() status: string) {
-    return this.submitService.searchSubmit(status);
+  @Post('new')
+  async searchSubmit(@Body() query: any) {
+    return this.submitService.searchSubmit(query);
   }
 }

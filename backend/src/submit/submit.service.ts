@@ -81,8 +81,7 @@ export class SubmitService {
     }
   }
 
-  async searchSubmit(status: string): Promise<Submit[]> {
-    const query: any = { status: { $regex: status, $options: 'i' } };
+  async searchSubmit(query: any): Promise<Submit[]> {
     try {
       const articles = await this.submitModel.find(query).exec();
       return articles;
