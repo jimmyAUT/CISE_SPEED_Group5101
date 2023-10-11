@@ -2,6 +2,7 @@ import SortableTable from "../../components/table/SortableTable";
 import React, { useState, useEffect } from "react";
 import { getArticles, removeArticle } from "@/api/articles";
 import { getSeList, searchMethod } from "@/api/search";
+import { updateScore } from "@/api/articles";
 
 interface ArticlesInterface {
   _id: string;
@@ -35,7 +36,13 @@ const Search: React.FC = () => {
     setPubyearRange({ ...pubyearRange, end: event.target.value });
   };
 
+  // SE method搜尋提交
   const handleMethodSubmit = async () => {
+    // 验证输入的年份是否合法
+    if (!isValidYear(pubyearRange.start) || !isValidYear(pubyearRange.end)) {
+      alert("Invalid year input.");
+      return;
+    }
     const query = {
       method: seOption,
     };
@@ -63,6 +70,24 @@ const Search: React.FC = () => {
     }
   };
 
+  // 分數提交
+  const handleScoreSubmit = async (articleId: string, newScore: number) => {
+    try {
+      console.log(articleId, typeof newScore);
+      const updatedArticle = await updateScore(articleId, newScore);
+      alert("Score updated successfully");
+      setArticlesData((prevData) =>
+        prevData.map((article) =>
+          article._id === articleId
+            ? { ...article, score: updatedArticle.score }
+            : article
+        )
+      );
+    } catch (error) {
+      console.error("Error updating score:", error);
+    }
+  };
+
   useEffect(() => {
     getSeList()
       .then((options) => {
@@ -85,30 +110,26 @@ const Search: React.FC = () => {
     return !isNaN(inputYear) && inputYear >= 1900 && inputYear <= currentYear;
   };
 
-  const headers: { key: keyof ArticlesInterface; label: string }[] = [
-    { key: "title", label: "Title" },
-    { key: "authors", label: "Authors" },
-    { key: "source", label: "Source" },
-    { key: "pubyear", label: "Publication Year" },
-    { key: "doi", label: "DOI" },
-    { key: "claim", label: "Claim" },
-    { key: "evidence", label: "Evidence" },
-    { key: "score", label: "Score" },
-  ];
-
-  const handleRemoveArticle = async (articleId: string) => {
-    console.log(articleId);
-    try {
-      await removeArticle(articleId); // 调用删除文章的 API
-
-      const updatedArticleData = articlesData.filter(
-        (article) => article._id !== articleId
-      );
-      setArticlesData(updatedArticleData);
-    } catch (error) {
-      console.error("Error deleting article:", error);
-    }
+  const handleScoreChange = (articleId: string, newScore: string) => {
+    // 更新与该文章相关的 score 输入
+    setArticlesData((prevData) =>
+      prevData.map((article) =>
+        article._id === articleId ? { ...article, newScore } : article
+      )
+    );
   };
+
+  const headers = [
+    "Title",
+    "Authors",
+    "Source",
+    "Publication Year",
+    "DOI",
+    "Claim",
+    "Evidence",
+    "Score",
+    "Vote",
+  ];
 
   return (
     <div className="container">
@@ -134,7 +155,52 @@ const Search: React.FC = () => {
       />
       <button onClick={handleMethodSubmit}>Submit</button>
       {articlesData.length > 0 ? (
-        <SortableTable headers={headers} data={articlesData} />
+        // <SortableTable headers={headers} data={articlesData} />
+        <table>
+          <thead>
+            <tr>
+              {headers.map((header) => (
+                <th key={header}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {articlesData.map((article) => (
+              <tr key={article._id}>
+                <td>{article.title}</td>
+                <td>{article.authors}</td> <td>{article.source}</td>
+                <td>{article.pubyear}</td>
+                <td>{article.doi}</td>
+                <td>{article.claim}</td>
+                <td>{article.evidence}</td>
+                <td>{parseFloat(article.score).toFixed(1)}</td>
+                <td>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    // value={article.score || ""}
+                    onChange={(e) =>
+                      handleScoreChange(article._id, e.target.value)
+                    }
+                  />
+                  <button
+                    disabled={
+                      !article.score ||
+                      parseFloat(article.score) < 1 ||
+                      parseFloat(article.score) > 5
+                    }
+                    onClick={() =>
+                      handleScoreSubmit(article._id, parseFloat(article.score))
+                    }
+                  >
+                    Submit
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : null}
     </div>
   );
