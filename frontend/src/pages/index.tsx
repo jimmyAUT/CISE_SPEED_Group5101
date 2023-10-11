@@ -36,9 +36,28 @@ const Home = () => {
     }
   };
 
+  const handleSearchClick = () => {
+    router.push('/search');
+  };
+  const handleSuggestClick = () => {
+    router.push('/articles');
+  };
+
   return (
     <div className="container">
-      <h1>Software Practice Empirical Evidence Database (SPEED)</h1>
+      <h1>Welcome to SPEED - Software Practice Empirical Evidence Database (SPEED)</h1>
+      <p>
+        SPEED is your source for empirical evidence in software practice.
+        Explore articles, suggest new ones, and search for valuable insights.
+      </p>
+      <div>
+        <a href="/articles/new">
+        <button onClick={() => router.push('/articles/new')}>Suggest Articles</button>
+        </a>
+        <a href="/search">
+        <button onClick={handleSearchClick}>Search Articles</button>
+        </a>
+      </div>
       {Object.keys(user).length !== 0 ? (
         <div>
           <button className={formStyles.formItem}>Logout</button>

@@ -3,6 +3,7 @@ import formStyles from "../../../styles/Form.module.scss";
 import { createSubmit } from "@/api/submit";
 
 const NewDiscussion = () => {
+
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
@@ -15,6 +16,7 @@ const NewDiscussion = () => {
     event.preventDefault();
     const authorsString = authors.join(", "); //connect the authors by ',' and turn array to string
 
+
     const subArticle = JSON.stringify({
       title,
       authors: authorsString,
@@ -23,26 +25,24 @@ const NewDiscussion = () => {
       doi,
       status,
     });
-    console.log(subArticle);
 
     try {
       // Send the data to the server using createSubmit
-      await createSubmit(subArticle);
+      await createSubmit(subArticle);    
+    setTitle("");
+    setAuthors([""]);
+    setSource("");
+    setPubYear(0);
+    setDoi("");
+    setShowPopup(true);
+  } catch (error) {
+    console.error("Submission error:", error);
+  }
+};
 
-      setTitle("");
-      setAuthors([""]);
-      setSource("");
-      setPubYear(0);
-      setDoi("");
-      setShowPopup(true);
-    } catch (error) {
-      console.error("Submission error:", error);
-    }
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
+    const closePopup = () => {
+      setShowPopup(false);
+    };
 
   const addAuthor = () => {
     setAuthors(authors.concat([""]));
