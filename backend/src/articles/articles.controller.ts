@@ -6,6 +6,8 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
+  Query,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './create-article.dto';
@@ -41,5 +43,21 @@ export class ArticlesController {
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<Article> {
     return this.articlesService.remove(id);
+  }
+
+  @Patch(':id')
+  async updateScore(
+    @Param('id') id: string,
+    @Query('addScore') addScore: string,
+  ) {
+    try {
+      const updatedArticle = await this.articlesService.updateScore(
+        id,
+        addScore,
+      );
+      return { message: 'Score updated successfully', article: updatedArticle };
+    } catch (error) {
+      return { error: error.message };
+    }
   }
 }

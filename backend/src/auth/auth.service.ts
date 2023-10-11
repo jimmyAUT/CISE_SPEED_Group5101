@@ -13,7 +13,7 @@ export class AuthService {
   async register(
     email: string,
     password: string,
-    role: string = 'submitter',
+    role = 'submitter',
   ): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new this.userModel({ email, password: hashedPassword, role });
