@@ -2,7 +2,6 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Submit } from './submit.schema';
-// import { SearchDto } from 'src/search/search.dto';
 
 @Injectable()
 export class SubmitService {
@@ -83,8 +82,6 @@ export class SubmitService {
   }
 
   async searchSubmit(query: any): Promise<Submit[]> {
-    // const { status } = query;
-    // const newQuery: any = { status: status };
     try {
       const articles = await this.submitModel.find(query).exec();
       return articles;
