@@ -10,8 +10,8 @@ interface ArticleInterface {
   source: string;
   pubyear: number;
   doi: string;
-  comment?: string;
-  abstract?: string;
+  claim?: string; // Updated
+  evidence?: string; // Updated
   score?: number;
 }
 
@@ -42,9 +42,10 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      comment: article.comment,
-      abstract: article.abstract,
+      claim: article.claim, // Updated
+      evidence: article.evidence, // Updated
       score: article.score,
+      vote_count: 1 // Added vote count default to 1
     };
 
     try {
@@ -68,8 +69,8 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
     "Source",
     "Publication Year",
     "DOI",
-    "Comment",
-    "Abstract",
+    "Claim", // Updated
+    "Evidence", // Updated
     "Score",
     "Action",
   ];
@@ -89,26 +90,25 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
           {localArticles.map((article) => (
             <tr key={article._id}>
               <td>{article.title}</td>
-              <td>{article.authors}</td>{" "}
-              {/* Display authors as a comma-separated string */}
+              <td>{article.authors}</td>
               <td>{article.source}</td>
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
               <td>
                 <input
                   type="text"
-                  value={article.comment || ""}
+                  value={article.claim || ""} // Updated
                   onChange={(e) =>
-                    handleInputChange(article._id, "comment", e.target.value)
+                    handleInputChange(article._id, "claim", e.target.value) // Updated
                   }
                 />
               </td>
               <td>
                 <input
                   type="text"
-                  value={article.abstract || ""}
+                  value={article.evidence || ""} // Updated
                   onChange={(e) =>
-                    handleInputChange(article._id, "abstract", e.target.value)
+                    handleInputChange(article._id, "evidence", e.target.value) // Updated
                   }
                 />
               </td>
@@ -130,7 +130,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
               <td>
                 <button
                   disabled={
-                    !article.comment ||
+                    !article.claim || // Updated
                     !article.score ||
                     article.score < 1 ||
                     article.score > 10
