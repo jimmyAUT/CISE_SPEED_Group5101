@@ -15,6 +15,8 @@ const Admin: NextPage = () => {
     <div className="container">
       <button onClick={handleShowArticles}>Show Articles</button>
       <button onClick={handleShowUsers}>Show Users</button>
+      <a href="/manual-email">Send Email</a>
+
     </div>
   );
 };
