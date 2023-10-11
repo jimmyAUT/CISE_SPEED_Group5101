@@ -12,4 +12,12 @@ export class SearchController {
   async searchAll() {
     return this.searchService.searchAll();
   }
+  @Post('method')
+  async searchMethod(@Body() searchDto: SearchDto) {
+    return this.searchService.searchMethod(searchDto);
+  }
+  @Get('allmethods')
+  async getSeList() {
+    return this.searchService.getSeList();
+  }
 }
