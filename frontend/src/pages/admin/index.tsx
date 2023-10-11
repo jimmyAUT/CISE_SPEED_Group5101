@@ -5,18 +5,20 @@ const Admin: NextPage = () => {
   const router = useRouter(); // 使用 useRouter 钩子来执行导航
 
   const handleShowArticles = () => {
-    router.push("/admin/articles"); // 导航到 "/articles" 页面
+    router.push("/admin/articles");
   };
   const handleShowUsers = () => {
-    router.push("/admin/users"); // 导航到 "/users" 页面
+    router.push("/admin/users");
+  };
+  const handleShowSubmits = () => {
+    router.push("/admin/review");
   };
 
   return (
     <div className="container">
       <button onClick={handleShowArticles}>Show Articles</button>
       <button onClick={handleShowUsers}>Show Users</button>
-      <a href="/manual-email">Send Email</a>
-
+      <button onClick={handleShowSubmits}>Show new Submissions</button>
     </div>
   );
 };

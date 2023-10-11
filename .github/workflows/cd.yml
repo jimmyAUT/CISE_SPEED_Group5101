@@ -2,7 +2,7 @@ name: deploy SPEED
 on:
   push:
     branches:
-      - jimmy
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest

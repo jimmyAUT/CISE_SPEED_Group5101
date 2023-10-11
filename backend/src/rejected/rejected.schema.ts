@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
 
 export const RejectedSchema = new mongoose.Schema({
@@ -7,7 +6,7 @@ export const RejectedSchema = new mongoose.Schema({
   source: String,
   pubyear: String,
   doi: String,
-  comment: String,
+  method: String,
 });
 
 export interface Rejected extends mongoose.Document {
@@ -16,5 +15,5 @@ export interface Rejected extends mongoose.Document {
   source: string;
   pubyear: string;
   doi: string;
-  comment: string;
+  method: string;
 }

@@ -40,7 +40,7 @@ export const removeSubmit = async (articleId: string) => {
 
 export const searchSubmit = async (query: any) => {
   try {
-    const response = await api.post("/submit", query, {
+    const response = await api.post("/submit/new", query, {
       headers: {
         "Content-Type": "application/json",
       },

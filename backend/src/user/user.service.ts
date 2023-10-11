@@ -56,4 +56,20 @@ export class UserService {
       };
     }
   }
+
+  async update(id: string, newUser: UserDto): Promise<User> {
+    try {
+      const updatedArticle = await this.userModel.findByIdAndUpdate(
+        id,
+        newUser,
+        { new: true },
+      );
+      return updatedArticle;
+    } catch (error) {
+      throw {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Error updating article',
+      };
+    }
+  }
 }

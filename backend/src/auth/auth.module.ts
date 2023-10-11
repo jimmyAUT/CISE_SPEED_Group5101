@@ -5,14 +5,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserModel } from './user.model';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
-// import { SessionSerializer } from './session.serializer';
+import { SessionSerializer } from './session.serializer';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserModel }]),
-    PassportModule,
+    PassportModule.register({ session: true }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy],
+  providers: [AuthService, LocalStrategy, SessionSerializer],
 })
 export class AuthModule {}
