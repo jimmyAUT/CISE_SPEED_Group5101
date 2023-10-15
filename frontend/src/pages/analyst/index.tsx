@@ -45,6 +45,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       comment: article.comment,
       abstract: article.abstract,
       score: article.score,
+      voteCount: 1,
     };
 
     try {

@@ -4,20 +4,17 @@ import {
   Body,
   Res,
   HttpStatus,
-  // UseGuards,
   Req,
-  // Session,
+  Session,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response, Request } from 'express';
-// import { LocalAuthGuard } from './loaclAuth.guard';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  // @Session()
   async register(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -35,13 +32,12 @@ export class AuthController {
   }
 
   @Post('login')
-  // @UseGuards(LocalAuthGuard)
-  async login(@Req() req: Request, @Res() res: Response) {
+  async login(@Req() req: Request, @Res() res: Response, @Session() session) {
     const { email, password } = req.body;
     const user = await this.authService.validateUser(email, password);
 
     if (user) {
-      // return res.status(HttpStatus.OK).json({ user });
+      session.user = { email: user.email, role: user.role };
       res.send(user.role);
     } else {
       return res

@@ -22,6 +22,8 @@ const Search: React.FC = () => {
   const [articlesData, setArticlesData] = useState<ArticlesInterface[]>([]); // 存储文章数据
   const [options, setOptions] = useState<string[]>([]);
 
+  const [addScore, setAddScore] = useState(""); // 用于存储輸入的score
+
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
@@ -110,13 +112,9 @@ const Search: React.FC = () => {
     return !isNaN(inputYear) && inputYear >= 1900 && inputYear <= currentYear;
   };
 
-  const handleScoreChange = (articleId: string, newScore: string) => {
-    // 更新与该文章相关的 score 输入
-    setArticlesData((prevData) =>
-      prevData.map((article) =>
-        article._id === articleId ? { ...article, newScore } : article
-      )
-    );
+  const handleScoreChange = (event: any) => {
+    const newScore = event.target.value;
+    setAddScore(newScore); // 更新输入字段的值
   };
 
   const headers = [
@@ -176,22 +174,21 @@ const Search: React.FC = () => {
                 <td>{parseFloat(article.score).toFixed(1)}</td>
                 <td>
                   <input
+                    id="scoreInput"
                     type="number"
                     min="1"
                     max="5"
-                    // value={article.score || ""}
-                    onChange={(e) =>
-                      handleScoreChange(article._id, e.target.value)
-                    }
+                    value={addScore}
+                    onChange={handleScoreChange}
                   />
                   <button
-                    disabled={
-                      !article.score ||
-                      parseFloat(article.score) < 1 ||
-                      parseFloat(article.score) > 5
-                    }
                     onClick={() =>
-                      handleScoreSubmit(article._id, parseFloat(article.score))
+                      handleScoreSubmit(article._id, parseFloat(addScore))
+                    }
+                    disabled={
+                      addScore === "" ||
+                      parseFloat(addScore) < 1 ||
+                      parseFloat(addScore) > 5
                     }
                   >
                     Submit
