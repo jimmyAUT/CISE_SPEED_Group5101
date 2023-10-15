@@ -7,7 +7,7 @@ import {
   Put,
   Delete,
   Patch,
-  Query,
+  // Query,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './create-article.dto';
@@ -48,7 +48,7 @@ export class ArticlesController {
   @Patch(':id')
   async updateScore(
     @Param('id') id: string,
-    @Query('addScore') addScore: string,
+    @Body('addScore') addScore: string,
   ) {
     try {
       const updatedArticle = await this.articlesService.updateScore(

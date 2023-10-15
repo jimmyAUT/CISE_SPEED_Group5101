@@ -42,7 +42,7 @@ export const removeArticle = async (articleId: string) => {
 export const updateScore = async (articleId: string, addScore:number) => {
   try {
     
-    const response = await api.patch(`/articles/${articleId}?addScore=${addScore}`, null, {
+    const response = await api.patch(`/articles/${articleId}`,{ addScore }, {
       headers: {
         "Content-Type": "application/json",
       },
