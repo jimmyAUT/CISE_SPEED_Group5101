@@ -1,74 +1,102 @@
-import { FormEvent, useState, useEffect } from "react";
-import formStyles from "../../../styles/Form.module.scss";
 import { createSubmit } from "@/api/submit";
+import { FormEvent, useState } from "react";
+import formStyles from "../../../styles/Form.module.scss";
 
 const NewDiscussion = () => {
-
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
   const [pubYear, setPubYear] = useState<number>(0);
   const [doi, setDoi] = useState("");
-  const [isValid, setIsValid] = useState(false);
-  const [volume, setVolume] = useState<string>("");
-  const [number, setNumber] = useState<string>("");
-  const [pages, setPages] = useState<string>("");
   const status = "unreview";
 
-  useEffect(() => {
-    const isFormValid = Boolean(
-      title &&
-      authors.length > 0 &&
-      authors.every(author => author) &&
-      source &&
-      pubYear &&
-      volume &&
-      number &&
-      pages &&
-      doi
-    );
-    setIsValid(isFormValid);
-  }, [title, authors, source, pubYear, volume, number, pages, doi]);
-  
+  const [bibtexContent, setBibtexContent] = useState("");
+
+  const handleBibtexPaste = (
+    event: React.ClipboardEvent<HTMLTextAreaElement>
+  ) => {
+    // 在粘贴事件中获取粘贴的文本
+    const pastedText = event.clipboardData.getData("text/plain");
+
+    // 将粘贴的文本设置为 BibTeX 内容
+    setBibtexContent(pastedText);
+
+    // 提取Bibtex內容
+    // 定义正则表达式模式以匹配
+    const titleRegex = /title=\s*{([^}]*)}/;
+    const authorRegex = /(?:author|editor)=\{([^}]*)}/;
+    const sourceRegex = /(?:booktitle|source|journal)=\{([^}]+)\}/;
+    const yearRegex = /year=\{(\d+)\}/;
+
+    // 使用正则表达式匹配内容
+    const titleMatch = bibtexContent.match(titleRegex);
+    const authorMatch = bibtexContent.match(authorRegex);
+    const sourceMatch = bibtexContent.match(sourceRegex);
+    const yearMatch = bibtexContent.match(yearRegex);
+    const doiMatch = bibtexContent.match(/doi=\{([^}]+)\}/);
+
+    // 检查是否找到内容
+    if (titleMatch) {
+      setTitle(titleMatch[1]);
+    }
+
+    if (authorMatch) {
+      const authorString = authorMatch[1];
+      // 使用 " and " 作为分隔符拆分作者字符串
+      const authorArray = authorString
+        .split(" and ")
+        .map((item) => item.trim());
+      setAuthors(authorArray);
+    }
+
+    if (sourceMatch) {
+      setSource(sourceMatch[1]);
+    }
+
+    if (yearMatch) {
+      setPubYear(parseInt(yearMatch[1]));
+    }
+
+    if (doiMatch) {
+      setDoi(doiMatch[1]);
+    }
+  };
+
+  // ================================================================================================
 
   const submitNewArticle = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!isValid) {
-      alert("Please fill in all fields before submitting.");
-      return;
-    }
-
     const authorsString = authors.join(", "); //connect the authors by ',' and turn array to string
-    const subArticle = JSON.stringify({
-      title,
-      authors: authorsString,
-      source,
-      publication_year: pubYear,
-      doi,
-      status,
 
-      volume,
-      number,
-      pages,
-    });
+    if (title === "" || source == "") {
+      alert("Please enter valid article's detail");
+    } else {
+      const subArticle = JSON.stringify({
+        title,
+        authors: authorsString,
+        source,
+        publication_year: pubYear,
+        doi,
+        status,
+      });
+      console.log(subArticle);
 
-    try {
-      // Send the data to the server using createSubmit
-      await createSubmit(subArticle);    
-    setTitle("");
-    setAuthors([""]);
-    setSource("");
-    setPubYear(0);
-    setDoi("");
-    setVolume("");
-    setNumber("");
-    setPages("");   
-    alert("Thanks for submitting your article!");
+      try {
+        // Send the data to the server using createSubmit
+        await createSubmit(subArticle);
 
-  } catch (error) {
-    console.error("Submission error:", error);
-  }
-};
+        alert("Your suggestion has been submitted! Thank you!");
+        setTitle("");
+        setAuthors([""]);
+        setSource("");
+        setPubYear(0);
+        setDoi("");
+        setBibtexContent("");
+      } catch (error) {
+        console.error("Submission error:", error);
+      }
+    }
+  };
 
   const addAuthor = () => {
     setAuthors(authors.concat([""]));
@@ -90,6 +118,16 @@ const NewDiscussion = () => {
 
   return (
     <div className="container">
+      <h1>BibTeX Content</h1>
+      <div>
+        <textarea
+          value={bibtexContent}
+          onPaste={handleBibtexPaste}
+          placeholder="Paste your BibTeX content here..."
+          rows={10}
+          cols={80}
+        />
+      </div>
       <h1>New Article</h1>
       <form className={formStyles.form} onSubmit={submitNewArticle}>
         <label htmlFor="title">Title:</label>
@@ -163,42 +201,6 @@ const NewDiscussion = () => {
             }
           }}
         />
-
-<label htmlFor="volume">Volume:</label>
-      <input
-        className={formStyles.formItem}
-        type="text"
-        name="volume"
-        id="volume"
-        value={volume}
-        onChange={(event) => {
-          setVolume(event.target.value);
-        }}
-      />
-
-      <label htmlFor="number">Number:</label>
-      <input
-        className={formStyles.formItem}
-        type="text"
-        name="number"
-        id="number"
-        value={number}
-        onChange={(event) => {
-          setNumber(event.target.value);
-        }}
-      />
-
-      <label htmlFor="pages">Pages:</label>
-      <input
-        className={formStyles.formItem}
-        type="text"
-        name="pages"
-        id="pages"
-        value={pages}
-        onChange={(event) => {
-          setPages(event.target.value);
-        }}
-      />
 
         <label htmlFor="doi">DOI:</label>
         <input
