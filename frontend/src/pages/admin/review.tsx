@@ -22,7 +22,9 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
   const [submitArticles, setSubmitArticles] = useState(articles);
 
   useEffect(() => {
-    alert("Receive a new submission.");
+    if (submitArticles.length > 0) {
+      alert("Receive a new submission.");
+    }
   }, []);
 
   const handleMethodChange = (id: string, method: string) => {
