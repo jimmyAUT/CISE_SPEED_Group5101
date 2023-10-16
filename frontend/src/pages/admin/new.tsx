@@ -33,6 +33,7 @@ const NewDiscussion = () => {
     const authorMatch = bibtexContent.match(authorRegex);
     const sourceMatch = bibtexContent.match(sourceRegex);
     const yearMatch = bibtexContent.match(yearRegex);
+    const doiMatch = bibtexContent.match(/doi=\{([^}]+)\}/);
 
     // 检查是否找到内容
     if (titleMatch) {
@@ -54,6 +55,10 @@ const NewDiscussion = () => {
 
     if (yearMatch) {
       setPubYear(parseInt(yearMatch[1]));
+    }
+
+    if (doiMatch) {
+      setDoi(doiMatch[1]);
     }
   };
 

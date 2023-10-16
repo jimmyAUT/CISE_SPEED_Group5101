@@ -124,7 +124,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
                 <input
                   type="number"
                   min="1"
-                  max="10"
+                  max="5"
                   value={article.score || ""}
                   onChange={(e) =>
                     handleInputChange(
@@ -141,7 +141,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
                     !article.claim || // Updated
                     !article.score ||
                     article.score < 1 ||
-                    article.score > 10
+                    article.score > 5
                   }
                   onClick={() => handleAddArticle(article)}
                 >

@@ -2,6 +2,7 @@ import { GetStaticProps, NextPage } from "next";
 import { useState, useEffect } from "react";
 
 import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
+import { getSeList } from "@/api/search";
 import { addRejected } from "@/api/review";
 
 interface ArticleInterface {
@@ -20,12 +21,52 @@ type ReviewProps = {
 
 const Review: NextPage<ReviewProps> = ({ articles }) => {
   const [submitArticles, setSubmitArticles] = useState(articles);
+  const [seOption, setSeOption] = useState<{ [key: string]: string }>({}); // 用于存储选择的选项
+  const [options, setOptions] = useState<string[]>([]); //由資料庫取得地的method list
+  const [newMethod, setNewMethod] = useState<{ [key: string]: string }>({});
+  const [isInputDisabled, setIsInputDisabled] = useState(true);
 
   useEffect(() => {
     if (submitArticles.length > 0) {
       alert("Receive a new submission.");
     }
+    getSeList()
+      .then((options) => {
+        console.log(options);
+        setOptions(options);
+      })
+      .catch((error) => {
+        console.error("Error fetching options:", error);
+      });
   }, []);
+
+  const handleOptionChange = (
+    articleId: string,
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { value } = event.target;
+
+    setIsInputDisabled(!!value);
+    setSeOption((prevOptions) => ({
+      ...prevOptions,
+      [articleId]: value,
+    }));
+    setNewMethod((prevMethods) => ({
+      ...prevMethods,
+      [articleId]: value,
+    }));
+  };
+
+  const handleNewMethodInput = (
+    articleId: string,
+    event: { target: { value: any } }
+  ) => {
+    const newValue = event.target.value;
+    setNewMethod((prevMethods) => ({
+      ...prevMethods,
+      [articleId]: newValue,
+    }));
+  };
 
   const handleMethodChange = (id: string, method: string) => {
     const updatedArticles = submitArticles.map((article) =>
@@ -116,7 +157,23 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
               <td>{article.pubyear}</td>
               <td>{article.doi}</td>
               <td>
+                <input
+                  placeholder="New method"
+                  value={newMethod[article._id] || ""}
+                  onChange={(e) => handleNewMethodInput(article._id, e)}
+                  disabled={isInputDisabled}
+                />
                 <select
+                  value={seOption[article._id] || ""}
+                  onChange={(e) => handleOptionChange(article._id, e)}
+                >
+                  {options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+                {/* <select
                   value={article.method || ""}
                   onChange={(e) =>
                     handleMethodChange(article._id, e.target.value)
@@ -126,11 +183,11 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                   <option value="method 1">method 1</option>
                   <option value="method 2">method 2</option>
                   <option value="method 3">method 3</option>
-                </select>
+                </select> */}
               </td>
               <td>
                 <button
-                  disabled={!article.method}
+                  disabled={!seOption[article._id]}
                   onClick={() => handlePass(article)}
                 >
                   Pass
