@@ -38,6 +38,8 @@ const NewDiscussion = () => {
     // 检查是否找到内容
     if (titleMatch) {
       setTitle(titleMatch[1]);
+    } else {
+      setTitle("");
     }
 
     if (authorMatch) {
@@ -47,18 +49,26 @@ const NewDiscussion = () => {
         .split(" and ")
         .map((item) => item.trim());
       setAuthors(authorArray);
+    } else {
+      setAuthors([]);
     }
 
     if (sourceMatch) {
       setSource(sourceMatch[1]);
+    } else {
+      setSource("");
     }
 
     if (yearMatch) {
       setPubYear(parseInt(yearMatch[1]));
+    } else {
+      setPubYear(0);
     }
 
     if (doiMatch) {
       setDoi(doiMatch[1]);
+    } else {
+      setDoi("");
     }
   };
 
