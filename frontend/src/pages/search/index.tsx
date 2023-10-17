@@ -26,18 +26,26 @@ const Search: React.FC = () => {
 
   const StarRating = ({ 
     articleId,
+    currentRating,
     onRatingChange 
   }: { 
     articleId: string,
+    currentRating: string,
     onRatingChange: (articleId: string, rating: number) => void 
   }) => {
-    const [rating, setRating] = useState(0);
-    
+    // const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState<number>(parseInt(currentRating) || 0);
+    useEffect(() => {
+      setRating(parseInt(currentRating) || 0);
+    }, [currentRating]);
+
     const handleRatingClick = (articleId: string, ratingValue: number) => {
         console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
         setRating(ratingValue);
         onRatingChange(articleId, ratingValue);
-        setScore({ ...score, [articleId]: ratingValue.toString() });
+        // setScore({ ...score, [articleId]: ratingValue.toString() });
+        console.log(`Rendering StarRating for Article ID: ${articleId} with rating: ${rating}`);
+
     };
   
     return (
@@ -50,7 +58,8 @@ const Search: React.FC = () => {
                             type="radio"
                             name={`rating-${articleId}`}
                             value={ratingValue}
-                            onClick={() => handleRatingClick(articleId, ratingValue)}
+                            onChange={() => handleRatingClick(articleId, ratingValue)}
+                            checked={ratingValue === rating}
                         />
                         <span style={{ color: ratingValue <= rating ? 'blue' : 'inherit' }}>{ratingValue}☆</span>
                     </label>
@@ -59,6 +68,7 @@ const Search: React.FC = () => {
         </div>
     );
   };
+
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
@@ -200,17 +210,21 @@ const handleScoreSubmit = async (articleId: string, newScore: number ) => {
             {articlesData.map((article) => (
               <tr key={article._id}>
                 <td>{article.title}</td>
-                <td>{article.authors}</td> <td>{article.source}</td>
+                <td>{article.authors}</td>
+                <td>{article.source}</td>
                 <td>{article.pubyear}</td>
                 <td>{article.doi}</td>
                 <td>{article.claim}</td>
                 <td>{article.evidence}</td>
                 <td>{parseFloat(article.score).toFixed(1)}</td>
                 <td>
-                  <StarRating 
+                  {/* <StarRating 
                       articleId={article._id} 
-                      onRatingChange={(id, newScore) => handleScoreChange(id,newScore.toString())}
-                  />
+                      onRatingChange={(id, newScore) => handleScoreChange(id,newScore.toString())}/> */}
+                      <StarRating 
+                      articleId={article._id} 
+                      currentRating={score[article._id] || "0"} 
+                      onRatingChange={(id, newScore) => handleScoreChange(id,newScore.toString())}/>
                   <button onClick={() => handleScoreSubmit(article._id, parseFloat(score[article._id]))}>
                     Submit
                   </button>
@@ -219,7 +233,9 @@ const handleScoreSubmit = async (articleId: string, newScore: number ) => {
             ))}
           </tbody>
         </table>
-      ) : null}
+       ) : (
+        <p>No articles in this range years.</p>
+       )}
     </div>
   );
 };
