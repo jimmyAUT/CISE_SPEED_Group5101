@@ -32,12 +32,20 @@ const Search: React.FC = () => {
     onRatingChange: (articleId: string, rating: number) => void 
   }) => {
     const [rating, setRating] = useState(0);
+    // const handleRatingClick = (articleId: string, ratingValue: number) => {
+    //     console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
+    //     setRating(ratingValue);
+    //     onRatingChange(articleId, ratingValue);
+    //     // setScore({ ...score, [articleId]: ratingValue.toString() });
+    //     console.log(`Rendering StarRating for Article ID: ${articleId} with rating: ${rating}`);
+
+    // };
     const handleRatingClick = (articleId: string, ratingValue: number) => {
-        console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
-        setRating(ratingValue);
-        onRatingChange(articleId, ratingValue);
-        setScore({ ...score, [articleId]: ratingValue.toString() });
-    };
+      console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
+      setRating(ratingValue);
+      onRatingChange(articleId, ratingValue);
+      console.log(`Rendering StarRating for Article ID: ${articleId} with rating: ${rating}`);
+  };
   
     return (
         <div>
@@ -49,7 +57,8 @@ const Search: React.FC = () => {
                             type="radio"
                             name={`rating-${articleId}`}
                             value={ratingValue}
-                            onClick={() => handleRatingClick(articleId, ratingValue)}
+                            onChange={() => handleRatingClick(articleId, ratingValue)}
+                            checked={ratingValue === rating}
                         />
                         <span style={{ color: ratingValue <= rating ? 'blue' : 'inherit' }}>{ratingValue}☆</span>
                     </label>

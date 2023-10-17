@@ -32,6 +32,7 @@ const Search: React.FC = () => {
     onRatingChange: (articleId: string, rating: number) => void 
   }) => {
     const [rating, setRating] = useState(0);
+    
     const handleRatingClick = (articleId: string, ratingValue: number) => {
         console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
         setRating(ratingValue);
@@ -58,31 +59,6 @@ const Search: React.FC = () => {
         </div>
     );
   };
-
-//   return (
-//     <div>
-//       {[...Array(5)].map((star, i) => {
-//         const ratingValue = i + 1;
-//         return (
-//           <label key={i}>
-//             <input
-//               type="radio"
-//               name="rating"
-//               value={ratingValue}
-//               onClick={() => {
-//                 setRating(ratingValue);
-//                 onRatingChange(ratingValue);
-//               }}
-//             />
-//             <span className={ratingValue <= rating ? 'active-star' : ''}>☆</span>
-//           </label>
-//         );
-//       })}
-//     </div>
-//   );
-// };
-
-
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
