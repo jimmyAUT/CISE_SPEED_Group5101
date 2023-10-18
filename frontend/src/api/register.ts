@@ -15,7 +15,7 @@ export const register = async (account: any) => {
         "Content-Type": "application/json",
       },
     });
-    return response;
+    return response.data.role;
   } catch (error) {
     throw error;
   }
