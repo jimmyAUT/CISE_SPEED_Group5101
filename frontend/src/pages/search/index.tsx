@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getArticles, removeArticle } from "@/api/articles";
 import { getSeList, searchMethod } from "@/api/search";
 import { updateScore } from "@/api/articles";
+import formStyles from "../../styles/Form.module.scss";
 
 interface ArticlesInterface {
   _id: string;
