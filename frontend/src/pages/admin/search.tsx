@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getArticles, removeArticle } from "@/api/articles";
+
 import { getSeList, searchMethod } from "@/api/search";
 import { updateScore } from "@/api/articles";
 
@@ -69,6 +69,7 @@ const Search: React.FC = () => {
     );
   };
 
+
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
@@ -116,7 +117,6 @@ const Search: React.FC = () => {
       console.error("Error fetching articles:", error);
     }
   };
-
   const handleScoreChange = (articleId: string, newScore: string) => {
     setScore({ ...score, [articleId]: newScore });
   };
@@ -208,7 +208,7 @@ const handleScoreSubmit = async (articleId: string, newScore: number ) => {
           </thead>
           <tbody>
             {articlesData.map((article) => (
-              <tr key={article._id}>
+              <tr key={article._id} id={article._id}>
                 <td>{article.title}</td>
                 <td>{article.authors}</td>
                 <td>{article.source}</td>
