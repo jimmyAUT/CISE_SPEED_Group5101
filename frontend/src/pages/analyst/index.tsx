@@ -30,7 +30,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
     if (localArticles.length > 0) {
       alert("New articles waiting for analysis.");
     }
-  }, []);
+  }, [localArticles.length]);
 
   const handleInputChange = (
     id: string,

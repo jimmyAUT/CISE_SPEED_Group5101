@@ -38,7 +38,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       .catch((error) => {
         console.error("Error fetching options:", error);
       });
-  }, []);
+  }, [submitArticles.length]);
 
   const handleOptionChange = (
     articleId: string,
