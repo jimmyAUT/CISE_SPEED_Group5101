@@ -46,19 +46,11 @@ const Home = () => {
   return (
     <div className="container">
       <h1>Welcome to SPEED - Software Practice Empirical Evidence Database</h1>
-      <tr>
-        <h2>
-          <p>
-            <tr>
-              SPEED is your source for empirical evidence in software practice.
-            </tr>
-            <tr>
-              Explore articles, suggest new ones, and search for valuable
-              insights.
-            </tr>
-          </p>
-        </h2>
-      </tr>
+
+      <h2>SPEED is your source for empirical evidence in software practice.</h2>
+      <h2>
+        Explore articles, suggest new ones, and search for valuable insights.
+      </h2>
 
       <div>
         <button
