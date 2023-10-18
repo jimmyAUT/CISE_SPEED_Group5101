@@ -1,8 +1,8 @@
-name: deploy SPEED
+name: deploy SPEED product
 on:
   push:
     branches:
-      - jimmy
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,7 +39,7 @@ jobs:
       - name: Deploy frontend to Vercel
         run: |
           cd frontend 
-          npx vercel --token ${VERCEL_TOKEN}
+          npx vercel --token ${VERCEL_TOKEN} --prod
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_FRONTEND_PROJECT_ID }}

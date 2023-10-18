@@ -1,7 +1,10 @@
 import { GetStaticProps, NextPage } from "next";
-import { useEffect, useState } from "react";
+// import { useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
+import formStyles from "../../../styles/Form.module.scss";
+
 import { createArticle } from "@/api/articles";
-import { searchSubmit } from "@/api/submit";
+import { searchSubmit, removeSubmit } from "@/api/submit";
 
 interface ArticleInterface {
   _id: string;
@@ -13,6 +16,7 @@ interface ArticleInterface {
   claim?: string; // Updated
   evidence?: string; // Updated
   score?: number;
+  method: string;
 }
 
 type AnalystProps = {
@@ -39,7 +43,10 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
     setLocalArticles(updatedArticles);
   };
 
-  const handleAddArticle = async (article: ArticleInterface) => {
+  const handleAddArticle = async (
+    articleId: string,
+    article: ArticleInterface
+  ) => {
     console.log("Adding article to DB:", article);
 
     const dataToSend = {
@@ -52,10 +59,12 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       evidence: article.evidence, // Updated
       score: article.score,
       vote_count: 1, // Added vote count default to 1
+      method: article.method,
     };
 
     try {
       const response = await createArticle(JSON.stringify(dataToSend));
+      await removeSubmit(articleId);
       console.log("Article added:", response);
 
       // Display an alert after successful addition
@@ -143,7 +152,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
                     article.score < 1 ||
                     article.score > 5
                   }
-                  onClick={() => handleAddArticle(article)}
+                  onClick={() => handleAddArticle(article._id, article)}
                 >
                   Add
                 </button>

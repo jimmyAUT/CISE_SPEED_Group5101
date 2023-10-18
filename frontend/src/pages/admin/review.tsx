@@ -46,7 +46,11 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
   ) => {
     const { value } = event.target;
 
-    setIsInputDisabled(!!value);
+    if (value === "") {
+      setIsInputDisabled(false); // 用户未选择 Option，不禁用输入框
+    } else {
+      setIsInputDisabled(true); // 用户选择了 Option，禁用输入框
+    }
     setSeOption((prevOptions) => ({
       ...prevOptions,
       [articleId]: value,
@@ -173,21 +177,10 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                     </option>
                   ))}
                 </select>
-                {/* <select
-                  value={article.method || ""}
-                  onChange={(e) =>
-                    handleMethodChange(article._id, e.target.value)
-                  }
-                >
-                  <option value="">Select method</option>
-                  <option value="method 1">method 1</option>
-                  <option value="method 2">method 2</option>
-                  <option value="method 3">method 3</option>
-                </select> */}
               </td>
               <td>
                 <button
-                  disabled={!seOption[article._id]}
+                  disabled={!newMethod[article._id]}
                   onClick={() => handlePass(article)}
                 >
                   Pass

@@ -12,8 +12,8 @@ interface ArticlesInterface {
   doi: string;
   claim: string;
   evidence: string;
-  method: string;
   score: string;
+  method: string;
 }
 
 type ArticlesProps = {
@@ -29,6 +29,7 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
     { key: "claim", label: "Claim" },
     { key: "evidence", label: "Evidence" },
     { key: "score", label: "Score" },
+    { key: "method", label: "Method" },
   ];
 
   const [articlesData, setArticlesData] = useState(articles);
