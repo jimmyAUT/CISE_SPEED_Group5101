@@ -13,14 +13,62 @@ interface ArticlesInterface {
   claim: string;
   evidence: string;
   score: string;
+  userRatings?: string[];
 }
 
 const Search: React.FC = () => {
-  const [seOption, setSeOption] = useState(""); // 用于存储选择的选项
+  const [seOption, setSeOption] = useState(""); // 用于存储选择的选项 //
   const [pubyearRange, setPubyearRange] = useState({ start: "", end: "" }); //設定顯示年份區間
   const [articlesData, setArticlesData] = useState<ArticlesInterface[]>([]); // 存储文章数据
-  const [options, setOptions] = useState<string[]>([]);
+  const [options, setOptions] = useState<string[]>([]); //copy
   const [score, setScore] = useState<{ [key: string]: string }>({});
+  // const [rating, setRating] = useState(0);
+
+  const StarRating = ({ 
+    articleId,
+    currentRating,
+    onRatingChange 
+  }: { 
+    articleId: string,
+    currentRating: string,
+    onRatingChange: (articleId: string, rating: number) => void 
+  }) => {
+    // const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState<number>(parseInt(currentRating) || 0);
+    useEffect(() => {
+      setRating(parseInt(currentRating) || 0);
+    }, [currentRating]);
+
+    const handleRatingClick = (articleId: string, ratingValue: number) => {
+        console.log(`Article ID: ${articleId}, Rating: ${ratingValue}`);
+        setRating(ratingValue);
+        onRatingChange(articleId, ratingValue);
+        // setScore({ ...score, [articleId]: ratingValue.toString() });
+        console.log(`Rendering StarRating for Article ID: ${articleId} with rating: ${rating}`);
+
+    };
+  
+    return (
+        <div>
+            {[...Array(5)].map((star, i) => {
+                const ratingValue = i + 1;
+                return (
+                    <label key={i}>
+                        <input
+                            type="radio"
+                            name={`rating-${articleId}`}
+                            value={ratingValue}
+                            onChange={() => handleRatingClick(articleId, ratingValue)}
+                            checked={ratingValue === rating}
+                        />
+                        <span style={{ color: ratingValue <= rating ? 'blue' : 'inherit' }}>{ratingValue}☆</span>
+                    </label>
+                );
+            })}
+        </div>
+    );
+  };
+
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
@@ -69,29 +117,29 @@ const Search: React.FC = () => {
       console.error("Error fetching articles:", error);
     }
   };
-
-  // 檢查輸入的評分
   const handleScoreChange = (articleId: string, newScore: string) => {
     setScore({ ...score, [articleId]: newScore });
   };
+  
+// 分數提交
+const handleScoreSubmit = async (articleId: string, newScore: number ) => {
+  console.log(articleId, newScore)
+  try {
+    const updatedArticle = await updateScore(articleId, newScore);
+    alert("Score updated successfully");
+    const ranking = parseFloat(updatedArticle.article.score).toFixed(1);
+    setArticlesData((prevData) =>
+      prevData.map((article) =>
+        article._id === articleId ? { ...article, score: ranking } : article
+      )
+    );
+    setScore({ ...score, [articleId]: "" });
+  } catch (error) {
+    console.error("Error updating score:", error);
 
-  // 分數提交
-  const handleScoreSubmit = async (articleId: string, newScore: number) => {
-    try {
-      const updatedArticle = await updateScore(articleId, newScore);
-      alert("Score updated successfully");
-      const ranking = parseFloat(updatedArticle.article.score).toFixed(1);
-      setArticlesData((prevData) =>
-        prevData.map((article) =>
-          article._id === articleId ? { ...article, score: ranking } : article
-        )
-      );
-      setScore({ ...score, [articleId]: "" });
-    } catch (error) {
-      console.error("Error updating score:", error);
-    }
-  };
-
+  }
+};
+  
   useEffect(() => {
     getSeList()
       .then((options) => {
@@ -162,38 +210,25 @@ const Search: React.FC = () => {
             {articlesData.map((article) => (
               <tr key={article._id} id={article._id}>
                 <td>{article.title}</td>
-                <td>{article.authors}</td> <td>{article.source}</td>
+                <td>{article.authors}</td>
+                <td>{article.source}</td>
                 <td>{article.pubyear}</td>
                 <td>{article.doi}</td>
                 <td>{article.claim}</td>
                 <td>{article.evidence}</td>
                 <td>{parseFloat(article.score).toFixed(1)}</td>
                 <td>
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    value={score[article._id]}
-                    onChange={(e) =>
-                      handleScoreChange(article._id, e.target.value)
-                    }
-                  />
-                  <button
-                    disabled={
-                      !score[article._id] ||
-                      parseFloat(score[article._id]) < 1 ||
-                      parseFloat(score[article._id]) > 5
-                    }
-                    onClick={() =>
-                      handleScoreSubmit(
-                        article._id,
-                        parseFloat(score[article._id])
-                      )
-                    }
-                  >
+                  {/* <StarRating 
+                      articleId={article._id} 
+                      onRatingChange={(id, newScore) => handleScoreChange(id,newScore.toString())}/> */}
+                      <StarRating 
+                      articleId={article._id} 
+                      currentRating={score[article._id] || "0"} 
+                      onRatingChange={(id, newScore) => handleScoreChange(id,newScore.toString())}/>
+                  <button onClick={() => handleScoreSubmit(article._id, parseFloat(score[article._id]))}>
                     Submit
                   </button>
-                </td>
+                  </td>
               </tr>
             ))}
           </tbody>

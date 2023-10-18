@@ -1,5 +1,8 @@
 import { GetStaticProps, NextPage } from "next";
-import { useEffect, useState } from "react";
+// import { useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
+import formStyles from "../../../styles/Form.module.scss";
+
 import { createArticle } from "@/api/articles";
 import { searchSubmit } from "@/api/submit";
 

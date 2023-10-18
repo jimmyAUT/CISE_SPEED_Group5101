@@ -36,9 +36,34 @@ const Home = () => {
     }
   };
 
+  const handleSearchClick = () => {
+    router.push('/search');
+  };
+  const handleSuggestClick = () => {
+    router.push('/articles');
+  };
+
   return (
     <div className="container">
-      <h1>Software Practice Empirical Evidence Database (SPEED)</h1>
+      <h1>Welcome to SPEED - Software Practice Empirical Evidence Database</h1>
+      <tr><h2><p>
+      <tr>SPEED is your source for empirical evidence in software practice.</tr>
+      <tr>Explore articles, suggest new ones, and search for valuable insights.</tr>
+      </p></h2></tr>
+      
+      <div>
+        {/* <a href="/articles/new">
+        <button onClick={() => router.push('/articles/new')}>Suggest Articles</button>
+        </a>
+        <a href="/search">
+        <button onClick={handleSearchClick}>Search Articles</button>
+        </a> */}
+       <a href="/articles/new">
+      <button className={formStyles.formItem} onClick={() => router.push('/articles/new')}>Suggest Articles</button></a>
+      <a href="/search">
+      <button className={`${formStyles.formItem} ${formStyles.buttonSpace}`} onClick={handleSearchClick}>Search Articles</button></a>
+
+      </div>
       {Object.keys(user).length !== 0 ? (
         <div>
           <button className={formStyles.formItem}>Logout</button>

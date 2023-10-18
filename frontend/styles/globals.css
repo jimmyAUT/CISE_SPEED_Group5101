@@ -25,3 +25,16 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.star-rating-input {
+  display: none;
+}
+
+.star-rating-label {
+  cursor: pointer;
+}
+
+.star-rating-input:checked + .star-rating-star {
+  color: blue;
+}
+
