@@ -1,5 +1,3 @@
-/* eslint-disable prettier/prettier */
-// /* eslint-disable prettier/prettier */
 import {
   CanActivate,
   ExecutionContext,

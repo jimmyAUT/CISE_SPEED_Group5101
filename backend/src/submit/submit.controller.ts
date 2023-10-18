@@ -6,11 +6,9 @@ import {
   Param,
   Put,
   Delete,
-  // Query,
 } from '@nestjs/common';
 import { Submit } from './submit.schema';
 import { SubmitService } from './submit.service';
-// import { SearchDto } from 'src/search/search.dto';
 
 @Controller('submit')
 export class SubmitController {

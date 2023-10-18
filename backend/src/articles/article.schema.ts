@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
 
 export const ArticleSchema = new mongoose.Schema({
@@ -7,9 +6,11 @@ export const ArticleSchema = new mongoose.Schema({
   source: String,
   pubyear: String,
   doi: String,
-  abstract: String,
-  comment: String,
-  score: String,
+  claim: String,
+  evidence: String,
+  method: String,
+  score: Number,
+  voteCount: Number,
 });
 
 export interface Article extends mongoose.Document {
@@ -18,7 +19,9 @@ export interface Article extends mongoose.Document {
   source: string;
   pubyear: string;
   doi: string;
-  abstract: string;
-  comment: string;
-  score: string;
+  claim: string;
+  evidence: string;
+  method: string;
+  score: number;
+  voteCount: number;
 }

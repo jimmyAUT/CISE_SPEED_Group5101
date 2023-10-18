@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const API_BASE_URL = "http://localhost:5000";
-const API_BASE_URL = "https://speed-server.vercel.app";
+const API_BASE_URL = "http://localhost:5000";
+// const API_BASE_URL = "https://speed-server.vercel.app";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -15,7 +15,7 @@ export const register = async (account: any) => {
         "Content-Type": "application/json",
       },
     });
-    return response;
+    return response.data.role;
   } catch (error) {
     throw error;
   }

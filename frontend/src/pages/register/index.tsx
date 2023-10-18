@@ -22,6 +22,16 @@ export default function Register() {
       const response = await register(account);
       console.log(response);
       setUser(response);
+
+      if (response === "moderator") {
+        router.push("/review");
+      } else if (response === "administrator") {
+        router.push("/admin");
+      } else if (response === "submitter") {
+        router.push("/articles/new");
+      } else if (response === "analyst") {
+        router.push("/analyst");
+      }
     } catch (error) {
       console.error("Register Error:", error);
     }

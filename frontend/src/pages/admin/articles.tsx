@@ -10,9 +10,10 @@ interface ArticlesInterface {
   source: string;
   pubyear: string;
   doi: string;
-  abstract: string;
-  comment: string;
+  claim: string;
+  evidence: string;
   score: string;
+  method: string;
 }
 
 type ArticlesProps = {
@@ -25,9 +26,10 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
     { key: "source", label: "Source" },
     { key: "pubyear", label: "Publication Year" },
     { key: "doi", label: "DOI" },
-    { key: "abstract", label: "Abstract" },
-    { key: "comment", label: "Comment" },
+    { key: "claim", label: "Claim" },
+    { key: "evidence", label: "Evidence" },
     { key: "score", label: "Score" },
+    { key: "method", label: "Method" },
   ];
 
   const [articlesData, setArticlesData] = useState(articles);
