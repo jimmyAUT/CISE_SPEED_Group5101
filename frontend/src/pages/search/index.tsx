@@ -242,7 +242,9 @@ const Search: React.FC = () => {
             ))}
           </tbody>
         </table>
-      ) : null}
+      ) : (
+        <p>No articles in this range years.</p>
+      )}
     </div>
   );
 };

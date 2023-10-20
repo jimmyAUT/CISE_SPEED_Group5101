@@ -1,6 +1,7 @@
 @import "./Form.module.scss";
 
 .form {
+  position: relative;
   display: flex;
   flex-direction: column;
   max-width: 30em;
@@ -63,4 +64,6 @@ body {
 
 body {
   background-color: whitesmoke;
+  margin-left: 3%;
+  margin-right: 3%;
 }
