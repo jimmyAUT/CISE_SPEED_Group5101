@@ -60,6 +60,7 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       score: article.score,
       vote_count: 1, // Added vote count default to 1
       method: article.method,
+
     };
 
     try {

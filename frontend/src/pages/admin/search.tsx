@@ -73,6 +73,8 @@ const Search: React.FC = () => {
     );
   };
 
+  const [addScore, setAddScore] = useState(""); // 用于存储輸入的score
+
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
@@ -163,7 +165,6 @@ const Search: React.FC = () => {
     const inputYear = parseInt(year, 10);
     return !isNaN(inputYear) && inputYear >= 1900 && inputYear <= currentYear;
   };
-
   const headers = [
     "Title",
     "Authors",
