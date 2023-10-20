@@ -12,6 +12,8 @@ import { ReviewModule } from './review/review.module';
 import { SubmitModule } from './submit/submit.module';
 import * as dotenv from 'dotenv';
 
+import { AuthTestModule } from './authTest/auth.module';
+
 dotenv.config();
 const mongoDB = process.env.mongoDB;
 
@@ -25,6 +27,7 @@ const mongoDB = process.env.mongoDB;
     RejectedModule,
     ReviewModule,
     SubmitModule,
+    AuthTestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

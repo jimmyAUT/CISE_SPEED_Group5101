@@ -40,3 +40,16 @@ export const handleLogout = () => {
   // 清除Cookie或LocalStorage并重置用户状态
   // ...
 };
+
+export const loginTest = async (account: any) => {
+  try {
+    const response = await api.post("/authTest/login", account, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

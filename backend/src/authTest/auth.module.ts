@@ -1,8 +1,8 @@
+import { User, UserModel } from './../auth/user.model';
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { AuthTestController } from './authTest.controller';
+import { AuthTestService } from './authTest.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserModel } from './user.model';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
@@ -10,7 +10,7 @@ import { PassportModule } from '@nestjs/passport';
     MongooseModule.forFeature([{ name: User.name, schema: UserModel }]),
     PassportModule.register({ session: true }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService],
+  controllers: [AuthTestController],
+  providers: [AuthTestService],
 })
-export class AuthModule {}
+export class AuthTestModule {}
