@@ -1,24 +1,25 @@
 // pages/login.tsx
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { loginTest } from "@/api/register";
 
 function LoginPage() {
+  const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    // 在 session 数据变化时执行操作
+    console.log("Session updated:", session);
+  }, [session]);
+
   const handleLogin = async () => {
     try {
-      const account = { email, password };
-      const user = await loginTest(account); // 使用你的 login 函數進行登入
-      if (user) {
-        await signIn("credentials", {
-          email: user.email,
-          password: user.password, // 這可能需要在 login 函數中返回密碼
-          redirect: false,
-        });
-      }
+      await signIn("credentials", {
+        email,
+        password,
+      });
     } catch (error) {
       console.error("Login failed:", error);
     }

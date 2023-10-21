@@ -131,6 +131,7 @@ const Search: React.FC = () => {
     console.log(articleId, newScore);
     try {
       const updatedArticle = await updateScore(articleId, newScore);
+      console.log(updatedArticle);
       alert("Score updated successfully");
       const ranking = parseFloat(updatedArticle.article.score).toFixed(1);
       setArticlesData((prevData) =>

@@ -23,7 +23,8 @@ export class AuthController {
   ) {
     try {
       const user = await this.authService.register(email, password, role);
-      return res.status(HttpStatus.CREATED).json(user);
+      const account = { email: user.email, role: user.role };
+      return account;
     } catch (error) {
       return res
         .status(HttpStatus.BAD_REQUEST)
@@ -38,7 +39,8 @@ export class AuthController {
 
     if (user) {
       session.user = { email: user.email, role: user.role };
-      res.send(user.role);
+      const account = { email: user.email, role: user.role };
+      return account;
     } else {
       return res
         .status(HttpStatus.UNAUTHORIZED)

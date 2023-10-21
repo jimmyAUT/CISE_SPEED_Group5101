@@ -46,7 +46,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
   ) => {
     const { value } = event.target;
 
-    if (value === "") {
+    if (value === "" || value === null) {
       setIsInputDisabled(false); // 用户未选择 Option，不禁用输入框
     } else {
       setIsInputDisabled(true); // 用户选择了 Option，禁用输入框
@@ -72,18 +72,6 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     }));
   };
 
-  const handleMethodChange = (id: string, method: string) => {
-    const updatedArticles = submitArticles.map((article) =>
-      article._id === id
-        ? {
-            ...article,
-            method,
-          }
-        : article
-    );
-    setSubmitArticles(updatedArticles);
-  };
-
   const handlePass = async (article: ArticleInterface) => {
     const id = article._id;
     const query = {
@@ -92,7 +80,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       source: article.source,
       publication_year: article.pubyear,
       doi: article.doi,
-      method: article.method,
+      method: newMethod[article._id],
       status: "reviewed",
     };
     try {
@@ -165,7 +153,7 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
                   placeholder="New method"
                   value={newMethod[article._id] || ""}
                   onChange={(e) => handleNewMethodInput(article._id, e)}
-                  disabled={isInputDisabled}
+                  // disabled={isInputDisabled}
                 />
                 <select
                   value={seOption[article._id] || ""}

@@ -6,8 +6,8 @@ export const submitSchema = new mongoose.Schema({
   source: String,
   pubyear: String,
   doi: String,
-  comment: String,
   status: String,
+  method: String,
 });
 
 export interface Submit extends mongoose.Document {
@@ -16,6 +16,6 @@ export interface Submit extends mongoose.Document {
   source: string;
   pubyear: string;
   doi: string;
-  comment: string;
   status: string;
+  method: string;
 }
