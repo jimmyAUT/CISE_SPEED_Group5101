@@ -6,7 +6,6 @@ import {
   Param,
   Put,
   Delete,
-  Patch,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './create-article.dto';
