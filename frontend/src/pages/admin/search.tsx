@@ -242,7 +242,9 @@ const Search: React.FC = () => {
             ))}
           </tbody>
         </table>
-      ) : null}
+      ) : (
+        <p>No articles in SPEED databse.</p>
+      )}
     </div>
   );
 };

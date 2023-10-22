@@ -1,23 +1,12 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  HttpStatus,
-  // UseGuards,
-  Req,
-  // Session,
-} from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
-// import { LocalAuthGuard } from './loaclAuth.guard';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  // @Session()
   async register(
     @Body('email') email: string,
     @Body('password') password: string,
@@ -26,7 +15,8 @@ export class AuthController {
   ) {
     try {
       const user = await this.authService.register(email, password, role);
-      return res.status(HttpStatus.CREATED).json(user);
+      const account = { email: user.email, role: user.role };
+      return account;
     } catch (error) {
       return res
         .status(HttpStatus.BAD_REQUEST)
@@ -35,14 +25,18 @@ export class AuthController {
   }
 
   @Post('login')
-  // @UseGuards(LocalAuthGuard)
-  async login(@Req() req: Request, @Res() res: Response) {
-    const { email, password } = req.body;
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    // const { email, password } = req.body;
     const user = await this.authService.validateUser(email, password);
 
     if (user) {
-      // return res.status(HttpStatus.OK).json({ user });
-      res.send(user.role);
+      // session.user = { email: user.email, role: user.role };
+      const account = { email: user.email, role: user.role };
+      return account;
     } else {
       return res
         .status(HttpStatus.UNAUTHORIZED)

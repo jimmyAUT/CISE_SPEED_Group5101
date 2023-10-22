@@ -1,8 +1,5 @@
 import { GetStaticProps, NextPage } from "next";
-// import { useState } from "react";
-import { FormEvent, useState, useEffect } from "react";
-import formStyles from "../../../styles/Form.module.scss";
-
+import { useState, useEffect } from "react";
 import { createArticle } from "@/api/articles";
 import { searchSubmit, removeSubmit } from "@/api/submit";
 
@@ -53,12 +50,12 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
       title: article.title,
       authors: article.authors,
       source: article.source,
-      publication_year: article.pubyear,
+      pubyear: article.pubyear,
       doi: article.doi,
       claim: article.claim, // Updated
       evidence: article.evidence, // Updated
       score: article.score,
-      vote_count: 1, // Added vote count default to 1
+      voteCount: 1, // Added vote count default to 1
       method: article.method,
     };
 
@@ -93,74 +90,88 @@ const Analyst: NextPage<AnalystProps> = ({ articles }) => {
   return (
     <div className="container">
       <h1>Analyst Review Page</h1>
-      <table>
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {localArticles.map((article) => (
-            <tr key={article._id}>
-              <td>{article.title}</td>
-              <td>{article.authors}</td>
-              <td>{article.source}</td>
-              <td>{article.pubyear}</td>
-              <td>{article.doi}</td>
-              <td>
-                <input
-                  type="text"
-                  value={article.claim || ""} // Updated
-                  onChange={
-                    (e) =>
-                      handleInputChange(article._id, "claim", e.target.value) // Updated
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="text"
-                  value={article.evidence || ""} // Updated
-                  onChange={
-                    (e) =>
-                      handleInputChange(article._id, "evidence", e.target.value) // Updated
-                  }
-                />
-              </td>
-              <td>
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  value={article.score || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      article._id,
-                      "score",
-                      Number(e.target.value)
-                    )
-                  }
-                />
-              </td>
-              <td>
-                <button
-                  disabled={
-                    !article.claim || // Updated
-                    !article.score ||
-                    article.score < 1 ||
-                    article.score > 5
-                  }
-                  onClick={() => handleAddArticle(article._id, article)}
-                >
-                  Add
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {localArticles.length > 0 ? (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                {headers.map((header) => (
+                  <th key={header}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {localArticles.map((article) => (
+                <tr key={article._id}>
+                  <td>{article.title}</td>
+                  <td>{article.authors}</td>
+                  <td>{article.source}</td>
+                  <td>{article.pubyear}</td>
+                  <td>{article.doi}</td>
+                  <td>
+                    <input
+                      type="text"
+                      value={article.claim || ""} // Updated
+                      onChange={
+                        (e) =>
+                          handleInputChange(
+                            article._id,
+                            "claim",
+                            e.target.value
+                          ) // Updated
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={article.evidence || ""} // Updated
+                      onChange={
+                        (e) =>
+                          handleInputChange(
+                            article._id,
+                            "evidence",
+                            e.target.value
+                          ) // Updated
+                      }
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      value={article.score || ""}
+                      onChange={(e) =>
+                        handleInputChange(
+                          article._id,
+                          "score",
+                          Number(e.target.value)
+                        )
+                      }
+                    />
+                  </td>
+                  <td>
+                    <button
+                      disabled={
+                        !article.claim || // Updated
+                        !article.score ||
+                        article.score < 1 ||
+                        article.score > 5
+                      }
+                      onClick={() => handleAddArticle(article._id, article)}
+                    >
+                      Add
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <h1>No article waiting for analysis.</h1>
+      )}
     </div>
   );
 };

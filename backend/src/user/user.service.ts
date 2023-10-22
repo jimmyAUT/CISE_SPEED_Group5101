@@ -72,4 +72,15 @@ export class UserService {
       };
     }
   }
+
+  async updateRole(id: string, newRole: string): Promise<User> {
+    try {
+      const user = await this.userModel.findById(id).exec();
+      user.role = newRole;
+      const updatedUser = await user.save();
+      return updatedUser;
+    } catch (error) {
+      throw new Error('Error updating role: ' + error.message);
+    }
+  }
 }

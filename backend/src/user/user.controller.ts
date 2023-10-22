@@ -6,12 +6,11 @@ import {
   Param,
   Put,
   Delete,
-  // UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.schema';
 import { UserDto } from './user.dto';
-// import { LocalAuthGuard } from 'src/auth/loaclAuth.guard';
 
 @Controller('user')
 export class UserController {
@@ -28,7 +27,6 @@ export class UserController {
   }
 
   @Get()
-  // @UseGuards(LocalAuthGuard)
   async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
@@ -39,7 +37,6 @@ export class UserController {
   //   }
 
   @Put(':id')
-  // @UseGuards(LocalAuthGuard)
   async update(
     @Param('id') id: string,
     @Body() updateUserDto: UserDto,
@@ -48,8 +45,32 @@ export class UserController {
   }
 
   @Delete(':id')
-  // @UseGuards(LocalAuthGuard)
   async remove(@Param('id') id: string): Promise<User> {
     return this.userService.remove(id);
+  }
+
+  @Patch(':id')
+  async updateScore(@Param('id') id: string, @Body('newRole') newRole: string) {
+    try {
+      const updatedUser = await this.userService.updateRole(id, newRole);
+      return { message: 'Score updated successfully', user: updatedUser };
+    } catch (error) {
+      return { error: error.message };
+    }
+  }
+
+  @Post('login')
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+  ) {
+    const user = await this.userService.validateUser(email, password);
+
+    if (user) {
+      const account = { email: user.email, role: user.role };
+      return account;
+    } else {
+      return null;
+    }
   }
 }

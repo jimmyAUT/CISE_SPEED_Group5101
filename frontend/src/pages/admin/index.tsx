@@ -17,12 +17,15 @@ const Admin: NextPage = () => {
 
   return (
     <div className="container">
+      <br />
       <button className={formStyles.formItem} onClick={handleShowArticles}>
         Show Articles
       </button>
+      <br />
       <button className={formStyles.formItem} onClick={handleShowUsers}>
         Show Users
       </button>
+      <br />
       <button className={formStyles.formItem} onClick={handleShowSubmits}>
         Show new Submissions
       </button>

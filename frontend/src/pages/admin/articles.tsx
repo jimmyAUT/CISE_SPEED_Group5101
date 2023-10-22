@@ -1,5 +1,4 @@
 import { NextPage, GetServerSideProps } from "next";
-import SortableTable from "../../components/table/SortableTable";
 import { useState } from "react";
 import { getArticles, removeArticle } from "@/api/articles";
 
@@ -20,16 +19,17 @@ type ArticlesProps = {
   articles: ArticlesInterface[];
 };
 const Articles: NextPage<ArticlesProps> = ({ articles }) => {
-  const headers: { key: keyof ArticlesInterface; label: string }[] = [
-    { key: "title", label: "Title" },
-    { key: "authors", label: "Authors" },
-    { key: "source", label: "Source" },
-    { key: "pubyear", label: "Publication Year" },
-    { key: "doi", label: "DOI" },
-    { key: "claim", label: "Claim" },
-    { key: "evidence", label: "Evidence" },
-    { key: "score", label: "Score" },
-    { key: "method", label: "Method" },
+  const headers = [
+    "Title",
+    "Authors",
+    "Source",
+    "Publication Year",
+    "DOI",
+    "Claim", // Updated
+    "Evidence", // Updated
+    "Score",
+    "Method",
+    "Action",
   ];
 
   const [articlesData, setArticlesData] = useState(articles);
@@ -50,8 +50,42 @@ const Articles: NextPage<ArticlesProps> = ({ articles }) => {
 
   return (
     <div className="container">
-      <h1>Articles:</h1>
-      <SortableTable headers={headers} data={articles} />
+      {articlesData.length > 0 ? (
+        <div>
+          <h1>SPEED Articles:</h1>
+          <table>
+            <thead>
+              <tr>
+                {headers.map((header) => (
+                  <th key={header}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {articlesData.map((article) => (
+                <tr key={article._id}>
+                  <td>{article.title}</td>
+                  <td>{article.authors}</td>
+                  <td>{article.source}</td>
+                  <td>{article.pubyear}</td>
+                  <td>{article.doi}</td>
+                  <td>{article.claim}</td>
+                  <td>{article.evidence}</td>
+                  <td>{article.score}</td>
+                  <td>{article.method}</td>
+                  <td>
+                    <button onClick={() => handleRemoveArticle(article._id)}>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <h1>No article in SPEED database</h1>
+      )}
     </div>
   );
 };
@@ -70,7 +104,7 @@ export const getServerSideProps: GetServerSideProps<ArticlesProps> = async (
     console.error("Error fetching articles:", error);
     return {
       props: {
-        articles: [{ title: "No article found" }],
+        articles: [],
       },
     };
   }
