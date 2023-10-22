@@ -24,7 +24,7 @@ export const register = async (account: any) => {
 // login 邏輯
 export const login = async (account: any) => {
   try {
-    const response = await api.post("/auth/login", account, {
+    const response = await api.post("/user/login", account, {
       headers: {
         "Content-Type": "application/json",
       },

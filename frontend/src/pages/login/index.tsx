@@ -18,13 +18,13 @@ const LoginPage = () => {
       const response = await login(account);
       console.log(response);
       setUser(response);
-      if (response === "moderator") {
+      if (response.role === "moderator") {
         router.push("/review");
-      } else if (response === "administrator") {
+      } else if (response.role === "administrator") {
         router.push("/admin");
-      } else if (response === "submitter") {
+      } else if (response.role === "submitter") {
         router.push("/articles/new");
-      } else if (response === "analyst") {
+      } else if (response.role === "analyst") {
         router.push("/analyst");
       }
     } catch (error) {

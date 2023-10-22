@@ -1,14 +1,6 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Res,
-  HttpStatus,
-  Req,
-  Session,
-} from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Response, Request } from 'express';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -33,12 +25,16 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Req() req: Request, @Res() res: Response, @Session() session) {
-    const { email, password } = req.body;
+  async login(
+    @Body('email') email: string,
+    @Body('password') password: string,
+    @Res() res: Response,
+  ) {
+    // const { email, password } = req.body;
     const user = await this.authService.validateUser(email, password);
 
     if (user) {
-      session.user = { email: user.email, role: user.role };
+      // session.user = { email: user.email, role: user.role };
       const account = { email: user.email, role: user.role };
       return account;
     } else {
