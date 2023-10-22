@@ -99,6 +99,7 @@ const Search: React.FC = () => {
     };
     try {
       const articles = await searchMethod(query);
+      console.log(articles);
       if (articles.length > 0) {
         if (!pubyearRange.start && !pubyearRange.end) {
           setArticlesData(articles);
@@ -179,6 +180,7 @@ const Search: React.FC = () => {
   return (
     <div className="container">
       <h1>Search Articles:</h1>
+      <label>Select method from list: </label>
       <select value={seOption} onChange={handleOptionChange}>
         {options.map((option) => (
           <option key={option} value={option}>
@@ -186,18 +188,22 @@ const Search: React.FC = () => {
           </option>
         ))}
       </select>
+      <hr />
       <label>Start Pubyear: </label>
       <input
+        style={{ width: "30%" }}
         type="text"
         value={pubyearRange.start}
         onChange={handleStartYearChange}
       />
       <label>End Pubyear: </label>
       <input
+        style={{ width: "30%" }}
         type="text"
         value={pubyearRange.end}
         onChange={handleEndYearChange}
       />
+      <hr />
       <button onClick={handleMethodSubmit}>Search</button>
       {articlesData.length > 0 ? (
         <table>
@@ -243,7 +249,7 @@ const Search: React.FC = () => {
           </tbody>
         </table>
       ) : (
-        <p>No articles in this range years.</p>
+        <p>No articles in the year range.</p>
       )}
     </div>
   );

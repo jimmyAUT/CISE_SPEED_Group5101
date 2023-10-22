@@ -63,7 +63,116 @@ body {
 }
 
 body {
+  padding-top: 60px;
   background-color: whitesmoke;
   margin-left: 3%;
   margin-right: 3%;
+}
+
+/* 基本表格样式 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
+
+table,
+th,
+td {
+  border: 1px solid #ccc;
+}
+
+/* 表头样式 */
+th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 8px;
+}
+
+/* 表格数据样式 */
+td {
+  padding: 8px;
+}
+
+/* 鼠标悬停样式 */
+tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* 奇数行背景色 */
+tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+/* 偶数行背景色 */
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* 输入框的外边框和文本样式 */
+input {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 16px;
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+/* 鼠标悬停时的输入框样式 */
+input:hover {
+  border-color: #007bff; /* 更改颜色为蓝色或你喜欢的颜色 */
+}
+
+/* 输入框聚焦时的样式 */
+input:focus {
+  border-color: #ff6600; /* 更改颜色为橙色或你喜欢的颜色 */
+  box-shadow: 0 0 5px #ff6600; /* 添加焦点时的阴影效果 */
+}
+
+/* 禁用状态的输入框样式 */
+input:disabled {
+  background-color: #f2f2f2;
+  color: #999999;
+}
+
+/* 错误状态的输入框样式 */
+input.error {
+  border-color: #ff0000; /* 更改颜色为红色 */
+}
+
+/* 输入框的占位文本样式 */
+input::placeholder {
+  color: #999999;
+}
+
+/* 按钮（Button）样式 */
+
+/* 基本按钮样式 */
+button {
+  background-color: #007bff; /* 按钮背景颜色，可以自定义 */
+  color: #fff; /* 按钮文本颜色，可以自定义 */
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+/* 鼠标悬停时的按钮样式 */
+button:hover {
+  background-color: #0056b3; /* 鼠标悬停时的背景颜色，可以自定义 */
+}
+
+/* 按钮聚焦时的样式 */
+button:focus {
+  outline: none; /* 去除默认的聚焦样式 */
+  box-shadow: 0 0 5px #ff6600; /* 添加焦点时的阴影效果，可以自定义颜色 */
+}
+
+/* 禁用状态的按钮样式 */
+button:disabled {
+  background-color: #f2f2f2;
+  color: #999999;
+  cursor: not-allowed;
 }

@@ -6,7 +6,7 @@ const NewDiscussion = () => {
   const [title, setTitle] = useState("");
   const [authors, setAuthors] = useState<string[]>([]);
   const [source, setSource] = useState("");
-  const [pubYear, setPubYear] = useState<number>(0);
+  const [pubYear, setPubYear] = useState<string>("0");
   const [doi, setDoi] = useState("");
   const status = "unreview";
 
@@ -22,7 +22,7 @@ const NewDiscussion = () => {
     setBibtexContent(pastedText);
 
     // 提取Bibtex內容
-    // 定义正则表达式模式以匹配
+    // 定义正则表达式模式以匹配 /title={([^}]*)}/;
     const titleRegex = /title=\s*{([^}]*)}/;
     const authorRegex = /(?:author|editor)=\{([^}]*)}/;
     const sourceRegex = /(?:booktitle|source|journal)=\{([^}]+)\}/;
@@ -54,7 +54,7 @@ const NewDiscussion = () => {
     }
 
     if (yearMatch) {
-      setPubYear(parseInt(yearMatch[1]));
+      setPubYear(yearMatch[1]);
     }
 
     if (doiMatch) {
@@ -75,9 +75,10 @@ const NewDiscussion = () => {
         title,
         authors: authorsString,
         source,
-        publication_year: pubYear,
+        pubyear: pubYear,
         doi,
         status,
+        method: "Set new class",
       });
       console.log(subArticle);
 
@@ -89,7 +90,7 @@ const NewDiscussion = () => {
         setTitle("");
         setAuthors([""]);
         setSource("");
-        setPubYear(0);
+        setPubYear("0");
         setDoi("");
         setBibtexContent("");
       } catch (error) {
@@ -191,13 +192,13 @@ const NewDiscussion = () => {
           type="number"
           name="pubYear"
           id="pubYear"
-          value={pubYear === 0 ? "" : pubYear}
+          value={parseInt(pubYear) === 0 ? "" : parseInt(pubYear)}
           onChange={(event) => {
             const val = event.target.value;
             if (val === "") {
-              setPubYear(0);
+              setPubYear("0");
             } else {
-              setPubYear(parseInt(val));
+              setPubYear(val);
             }
           }}
         />

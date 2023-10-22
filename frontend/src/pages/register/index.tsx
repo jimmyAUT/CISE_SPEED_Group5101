@@ -34,6 +34,7 @@ export default function Register() {
       }
     } catch (error) {
       console.error("Register Error:", error);
+      alert("The Email has been registered.");
     }
   };
 

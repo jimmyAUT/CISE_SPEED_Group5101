@@ -5,14 +5,17 @@ import { searchSubmit, reviewSubmit, removeSubmit } from "@/api/submit";
 import { getSeList } from "@/api/search";
 import { addRejected } from "@/api/review";
 
+import { searchRejecteds } from "@/api/review";
+import { searchArticles } from "@/api/review";
+
 interface ArticleInterface {
   _id: string;
   title: string;
   authors: string;
   source: string;
-  pubyear: number;
+  pubyear: string;
   doi: string;
-  method?: string;
+  method: string;
 }
 
 type ReviewProps = {
@@ -20,11 +23,14 @@ type ReviewProps = {
 };
 
 const Review: NextPage<ReviewProps> = ({ articles }) => {
+  console.log(articles);
   const [submitArticles, setSubmitArticles] = useState(articles);
   const [seOption, setSeOption] = useState<{ [key: string]: string }>({}); // 用于存储选择的选项
-  const [options, setOptions] = useState<string[]>([]); //由資料庫取得地的method list
+  const [options, setOptions] = useState<string[]>([]); //由資料庫取得的method list
   const [newMethod, setNewMethod] = useState<{ [key: string]: string }>({});
   const [isInputDisabled, setIsInputDisabled] = useState(true);
+
+  const [record, setRecord] = useState({ keyword: "", doi: "" });
 
   useEffect(() => {
     if (submitArticles.length > 0) {
@@ -38,19 +44,16 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       .catch((error) => {
         console.error("Error fetching options:", error);
       });
-  }, [submitArticles.length]);
+    if (record.doi !== "" || record.keyword !== "") {
+      setIsInputDisabled(false);
+    }
+  }, []);
 
   const handleOptionChange = (
     articleId: string,
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const { value } = event.target;
-
-    if (value === "") {
-      setIsInputDisabled(false); // 用户未选择 Option，不禁用输入框
-    } else {
-      setIsInputDisabled(true); // 用户选择了 Option，禁用输入框
-    }
     setSeOption((prevOptions) => ({
       ...prevOptions,
       [articleId]: value,
@@ -59,6 +62,40 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
       ...prevMethods,
       [articleId]: value,
     }));
+  };
+
+  const handleKeywordInput = (event: { target: { value: any } }) => {
+    const newQuery = event.target.value;
+    setRecord({ keyword: newQuery, doi: record.doi });
+    setIsInputDisabled(false);
+  };
+
+  const handleDoiInput = (event: { target: { value: any } }) => {
+    const newQuery = event.target.value;
+    setRecord({ keyword: record.keyword, doi: newQuery });
+    setIsInputDisabled(false);
+  };
+
+  const searchSPEED = async (query: {}) => {
+    console.log(query);
+    const result = await searchArticles(query);
+    if (result.length !== 0) {
+      alert(`The submission has been add into SPEED!${result[0]}`);
+    } else {
+      alert("No article found in SPEED.");
+    }
+    setRecord({ keyword: "", doi: "" });
+    setIsInputDisabled(true);
+  };
+  const searchRejected = async (query: {}) => {
+    const result = await searchRejecteds(query);
+    if (result.length !== 0) {
+      alert("The submission has been rejected before!");
+    } else {
+      alert("No record of this submission.");
+    }
+    setRecord({ keyword: "", doi: "" });
+    setIsInputDisabled(true);
   };
 
   const handleNewMethodInput = (
@@ -72,27 +109,15 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
     }));
   };
 
-  const handleMethodChange = (id: string, method: string) => {
-    const updatedArticles = submitArticles.map((article) =>
-      article._id === id
-        ? {
-            ...article,
-            method,
-          }
-        : article
-    );
-    setSubmitArticles(updatedArticles);
-  };
-
   const handlePass = async (article: ArticleInterface) => {
     const id = article._id;
     const query = {
       title: article.title,
       authors: article.authors,
       source: article.source,
-      publication_year: article.pubyear,
+      pubyear: article.pubyear,
       doi: article.doi,
-      method: article.method,
+      method: newMethod[article._id],
       status: "reviewed",
     };
     try {
@@ -144,55 +169,84 @@ const Review: NextPage<ReviewProps> = ({ articles }) => {
   return (
     <div className="container">
       <h1>Moderator Review Page</h1>
-      <table>
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {submitArticles.map((article) => (
-            <tr key={article._id}>
-              <td>{article.title}</td>
-              <td>{article.authors}</td>
-              <td>{article.source}</td>
-              <td>{article.pubyear}</td>
-              <td>{article.doi}</td>
-              <td>
-                <input
-                  placeholder="New method"
-                  value={newMethod[article._id] || ""}
-                  onChange={(e) => handleNewMethodInput(article._id, e)}
-                  disabled={isInputDisabled}
-                />
-                <select
-                  value={seOption[article._id] || ""}
-                  onChange={(e) => handleOptionChange(article._id, e)}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <button
-                  disabled={!newMethod[article._id]}
-                  onClick={() => handlePass(article)}
-                >
-                  Pass
-                </button>
-                <button onClick={() => handleRejectArticle(article)}>
-                  Reject
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {submitArticles.length > 0 ? (
+        <div>
+          <div>
+            <input
+              placeholder="Keyword"
+              onChange={(e) => handleKeywordInput(e)}
+              value={record.keyword}
+            ></input>
+            <input
+              placeholder="DOI"
+              onChange={(e) => handleDoiInput(e)}
+              value={record.doi}
+            ></input>
+            <button
+              disabled={isInputDisabled}
+              onClick={() => searchSPEED(record)}
+            >
+              SPEED DB
+            </button>
+            <button
+              disabled={isInputDisabled}
+              onClick={() => searchRejected(record)}
+            >
+              Rejected DB
+            </button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                {headers.map((header) => (
+                  <th key={header}>{header}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {submitArticles.map((article) => (
+                <tr key={article._id}>
+                  <td>{article.title}</td>
+                  <td>{article.authors}</td>
+                  <td>{article.source}</td>
+                  <td>{article.pubyear}</td>
+                  <td>{article.doi}</td>
+                  <td>
+                    <input
+                      placeholder="New method"
+                      value={newMethod[article._id] || ""}
+                      onChange={(e) => handleNewMethodInput(article._id, e)}
+                    />
+                    <select
+                      value={seOption[article._id] || ""}
+                      onChange={(e) => handleOptionChange(article._id, e)}
+                    >
+                      {options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button
+                      disabled={!newMethod[article._id]}
+                      onClick={() => handlePass(article)}
+                    >
+                      Pass
+                    </button>
+                    <button onClick={() => handleRejectArticle(article)}>
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <h1>No article waiting for review.</h1>
+      )}
     </div>
   );
 };

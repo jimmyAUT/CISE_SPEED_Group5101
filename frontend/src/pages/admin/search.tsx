@@ -73,8 +73,6 @@ const Search: React.FC = () => {
     );
   };
 
-  const [addScore, setAddScore] = useState(""); // 用于存储輸入的score
-
   const handleOptionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeOption(event.target.value);
   };
@@ -131,7 +129,6 @@ const Search: React.FC = () => {
     console.log(articleId, newScore);
     try {
       const updatedArticle = await updateScore(articleId, newScore);
-      console.log(updatedArticle);
       alert("Score updated successfully");
       const ranking = parseFloat(updatedArticle.article.score).toFixed(1);
       setArticlesData((prevData) =>
@@ -166,6 +163,7 @@ const Search: React.FC = () => {
     const inputYear = parseInt(year, 10);
     return !isNaN(inputYear) && inputYear >= 1900 && inputYear <= currentYear;
   };
+
   const headers = [
     "Title",
     "Authors",
@@ -244,7 +242,9 @@ const Search: React.FC = () => {
             ))}
           </tbody>
         </table>
-      ) : null}
+      ) : (
+        <p>No articles in SPEED databse.</p>
+      )}
     </div>
   );
 };

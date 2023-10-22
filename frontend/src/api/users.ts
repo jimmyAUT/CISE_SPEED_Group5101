@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5000";
-// const API_BASE_URL = "https://speed-server.vercel.app";
+// const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://speed-server.vercel.app";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -22,6 +22,20 @@ export const removeUser = async (userId: string) => {
     return response.data;
   } catch (error) {
     // 处理错误
+    throw error;
+  }
+};
+
+export const updateRole = async (userId: string, newRole:string) => {
+  try {
+    
+    const response = await api.patch(`/user/${userId}`,{ newRole }, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }); 
+    return response.data;
+  } catch (error) {
     throw error;
   }
 };

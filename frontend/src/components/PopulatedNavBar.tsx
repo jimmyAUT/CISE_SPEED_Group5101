@@ -5,7 +5,7 @@ import NavItem from "./nav/NavItem";
 
 const PopulatedNavBar = () => {
   return (
-    <NavBar>
+    <NavBar className="populated-navbar">
       <NavItem>SPEED</NavItem>
       <NavItem route="/" end>
         Home

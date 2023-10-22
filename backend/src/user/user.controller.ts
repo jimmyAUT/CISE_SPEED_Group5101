@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Delete,
+  Patch,
   // UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -51,5 +52,15 @@ export class UserController {
   // @UseGuards(LocalAuthGuard)
   async remove(@Param('id') id: string): Promise<User> {
     return this.userService.remove(id);
+  }
+
+  @Patch(':id')
+  async updateScore(@Param('id') id: string, @Body('newRole') newRole: string) {
+    try {
+      const updatedUser = await this.userService.updateRole(id, newRole);
+      return { message: 'Score updated successfully', user: updatedUser };
+    } catch (error) {
+      return { error: error.message };
+    }
   }
 }

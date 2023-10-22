@@ -38,8 +38,11 @@ export class RejectedService {
   }
 
   async findByDoi(searchRejected: SearchRejected): Promise<Rejected[]> {
-    const { doi } = searchRejected;
-    const query: any = { doi: { $regex: doi, $options: 'i' } };
+    const { keyword, doi } = searchRejected;
+    let query: any = { title: { $regex: keyword, $options: 'i' } };
+    if (doi) {
+      query = { ...query, doi: { $regex: doi } };
+    }
     try {
       const rejecteds = await this.rejectedModel.find(query).exec();
       return rejecteds;

@@ -7,16 +7,13 @@ const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("submitter"); // 默认角色是submitter
   const [user, setUser] = useState({});
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const account = JSON.stringify({
       email,
       password,
-      role,
     });
-    console.log(account);
     try {
       const response = await login(account);
       console.log(response);
@@ -32,17 +29,20 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error("Login Error:", error);
+      alert("Invalid credential");
     }
   };
 
   return (
     <div>
-      <button
-        className={formStyles.formItem}
-        onClick={() => router.push("/register")}
-      >
-        Register
-      </button>
+      <br />
+      <div>
+        <p>Test account:</p>
+        <p>moderator: review@mail.com 123</p>
+        <p>analyst: analyst@mail.com 123</p>
+        <p>administrator: admin@mail.com 123</p>
+      </div>
+      <br />
       <form className={formStyles.form} onSubmit={submit}>
         <input
           className={formStyles.formItem}
@@ -58,10 +58,15 @@ const LoginPage = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button className={formStyles.formItem} type="submit">
-          Sign In
-        </button>
+        <button type="submit">Sign In</button>
       </form>
+      <button
+        disabled={true}
+        className={formStyles.formItem}
+        onClick={() => router.push("/register")}
+      >
+        Apply to join the management.
+      </button>
     </div>
   );
 };

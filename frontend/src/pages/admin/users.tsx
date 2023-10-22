@@ -1,7 +1,7 @@
 import { GetServerSideProps, NextPage } from "next";
 import { useState } from "react"; // 引入useState
-import SortableTable from "../../components/table/SortableTable";
-import { getUsers, removeUser } from "@/api/users";
+
+import { getUsers, removeUser, updateRole } from "@/api/users";
 import React from "react";
 
 interface UsersInterface {
@@ -15,23 +15,51 @@ type UsersProps = {
 };
 
 const Users: NextPage<UsersProps> = ({ users }) => {
-  const headers: { key: keyof UsersInterface; label: string }[] = [
-    { key: "email", label: "Email" },
-    { key: "role", label: "Role" },
-  ];
-
   const [usersData, setUsersData] = useState(users);
+  const [action, setAction] = useState<{ [key: string]: string }>({});
 
-  const handleRemoveUser = async (userId: string) => {
-    console.log(userId);
-    try {
-      await removeUser(userId); // 调用删除用户的 API
+  const handleActionSelect = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+    userID: any
+  ) => {
+    setAction((prevActions) => ({
+      ...prevActions,
+      [userID]: event.target.value,
+    }));
+  };
 
-      // 删除用户后，更新 usersData 状态
-      const updatedUsersData = usersData.filter((user) => user._id !== userId);
-      setUsersData(updatedUsersData);
-    } catch (error) {
-      console.error("Error deleting user:", error);
+  const handleActionSubmit = async (
+    userId: string,
+    act: string,
+    account: string
+  ) => {
+    console.log(userId, act, account);
+    if (act == "Delete") {
+      try {
+        await removeUser(userId); // 调用删除用户的 API
+
+        // 删除用户后，更新 usersData 状态
+        const updatedUsersData = usersData.filter(
+          (user) => user._id !== userId
+        );
+        alert(`${account} has been remove.`);
+        setUsersData(updatedUsersData);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
+    } else {
+      try {
+        const res = await updateRole(userId, act);
+        console.log(res.user);
+        const updatedUser = res.user;
+        alert(`The role of ${account} has been updated.`);
+        setUsersData((prevUsers) =>
+          prevUsers.map((user) => (user._id === userId ? updatedUser : user))
+        );
+        console.log(usersData);
+      } catch (error) {
+        console.error("Error updating user:", error);
+      }
     }
   };
 
@@ -39,7 +67,7 @@ const Users: NextPage<UsersProps> = ({ users }) => {
     <div className="container">
       <h1>Users:</h1>
       {
-        <table>
+        <table className="table">
           <thead>
             <tr>
               <th>Email</th>
@@ -53,8 +81,22 @@ const Users: NextPage<UsersProps> = ({ users }) => {
                 <td>{user.email}</td>
                 <td>{user.role}</td>
                 <td>
-                  <button onClick={() => handleRemoveUser(user._id)}>
-                    Remove
+                  <select
+                    value={action[user._id]}
+                    onChange={(e) => handleActionSelect(e, user._id)}
+                  >
+                    <option value="">Select an action</option>
+                    <option value="Delete">Delete</option>
+                    <option value="Moderator">Moderator</option>
+                    <option value="Analyst">Analyst</option>
+                    <option value="Administrator">Administrator</option>
+                  </select>
+                  <button
+                    onClick={() =>
+                      handleActionSubmit(user._id, action[user._id], user.email)
+                    }
+                  >
+                    Submit
                   </button>
                 </td>
               </tr>
@@ -69,11 +111,6 @@ const Users: NextPage<UsersProps> = ({ users }) => {
 export const getServerSideProps: GetServerSideProps<UsersProps> = async (_) => {
   try {
     const users = await getUsers();
-    // users.map((user: { id: any; _id: any; email: any; role: any }) => ({
-    //   id: user.id ?? user._id,
-    //   email: user.email,
-    //   role: user.role,
-    // }));
     return {
       props: {
         users,
